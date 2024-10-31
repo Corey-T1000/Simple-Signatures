@@ -3,12 +3,12 @@ import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signa
 import { Mail, Phone, Globe, Linkedin, Twitter } from 'lucide-react';
 
 interface SignaturePreviewProps {
-  template: SignatureTemplate;
   data: SignatureData;
   style: SignatureStyle;
+  template: SignatureTemplate;
 }
 
-export function SignaturePreview({ template, data, style }: SignaturePreviewProps) {
+export function SignaturePreview({ data, style, template }: SignaturePreviewProps) {
   const iconSize = 16;
   const iconColor = style.primaryColor;
 
@@ -35,22 +35,33 @@ export function SignaturePreview({ template, data, style }: SignaturePreviewProp
     ? 'flex items-center gap-6' 
     : 'flex flex-col gap-4';
 
+  const imageAlignmentClass = {
+    start: 'self-start',
+    center: 'self-center',
+    end: 'self-end'
+  }[template.imageAlignment];
+
+  const { top, right, bottom, left } = template.padding;
+
   return (
     <div 
-      className="p-6 bg-white rounded-lg shadow-sm"
-      style={{ fontFamily: style.fontFamily }}
+      className="bg-white rounded-lg shadow-sm"
+      style={{ 
+        fontFamily: style.fontFamily,
+        padding: `${top}px ${right}px ${bottom}px ${left}px`
+      }}
     >
       <div className={containerClass}>
         {data.photo && (
-          <div className="flex-shrink-0">
+          <div className={`flex-shrink-0 ${imageAlignmentClass}`}>
             <img
               src={data.photo}
               alt={data.fullName}
               className={template.imageStyle === 'rounded' ? 'rounded-full' : 'rounded-md'}
               style={{
-                width: `${style.imageWidth}px`,
-                height: `${style.imageHeight}px`,
-                objectFit: style.imageFit,
+                width: `${style.imageWidth * template.imageScale}px`,
+                height: `${style.imageHeight * template.imageScale}px`,
+                objectFit: template.imageFit,
                 transform: `rotate(${style.imageRotation}deg) scale(${style.imageZoom})`,
               }}
             />

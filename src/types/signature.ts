@@ -27,4 +27,13 @@ export interface SignatureTemplate {
   imageStyle: 'rounded' | 'square';
   contentStyle: 'compact' | 'spacious';
   showIcons: boolean;
+  imageAlignment: 'start' | 'center' | 'end';
+  imageScale: number;
+  imageFit: 'cover' | 'contain' | 'fill';
+  padding: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
 }
