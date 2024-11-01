@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImageSettings } from '../types/signature';
 import { Lock, Unlock } from 'lucide-react';
 import { ColorPicker } from './ui/ColorPicker';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { SignatureTemplate } from '../types/signature';
 import { Slider } from './ui/Slider';
 import { Label } from './ui/label';

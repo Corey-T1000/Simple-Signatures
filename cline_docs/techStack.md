@@ -8,6 +8,8 @@
   - Dark mode support
 - State Management: React Hooks (useState, useEffect)
 - Component Architecture: Functional Components
+- Drag and Drop: @dnd-kit
+- File Upload: react-dropzone
 
 ## Development Tools
 - Package Manager: npm
@@ -29,6 +31,8 @@
 - Lucide for icons
 - class-variance-authority for component variants
 - clsx and tailwind-merge for class management
+- @dnd-kit/core and @dnd-kit/sortable for drag-and-drop
+- react-dropzone for file uploads
 
 ## Architecture Decisions
 1. Component Structure
@@ -37,6 +41,8 @@
    - Separation of UI components from feature components
    - Type definitions in separate directory
    - Utility functions for shared logic
+   - Button variants in separate files
+   - Error boundaries for component error handling
 
 2. File Organization
    - /src/components: React components
@@ -60,6 +66,7 @@
    - Type-safe props
    - Interface-first development
    - Proper type exports
+   - No implicit any types
 
 ## Development Requirements
 1. Code Quality
@@ -68,6 +75,7 @@
    - TypeScript strict mode
    - Component documentation
    - Proper type definitions
+   - Separation of concerns
 
 2. Testing Strategy
    - Unit tests for utilities
@@ -75,6 +83,7 @@
    - Integration tests
    - Accessibility testing
    - Visual regression tests
+   - Error boundary testing
 
 3. Error Handling
    - React Error Boundaries
@@ -82,6 +91,7 @@
    - Type checking
    - User feedback
    - Error logging
+   - Graceful degradation
 
 4. Documentation
    - JSDoc comments
@@ -89,6 +99,7 @@
    - Component usage examples
    - Development guidelines
    - Architecture documentation
+   - Error handling documentation
 
 5. Performance Considerations
    - Component optimization
@@ -96,6 +107,7 @@
    - Code splitting
    - Lazy loading
    - Render optimization
+   - Error recovery
 
 6. UI/UX Standards
    - Consistent component styling
@@ -106,3 +118,4 @@
    - Visual hierarchy
    - Color contrast
    - Focus management
+   - Error state design

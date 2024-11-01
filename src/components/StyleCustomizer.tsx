@@ -1,10 +1,8 @@
-import React from 'react';
 import { SignatureStyle } from '../types/signature';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ColorPicker } from './ui/ColorPicker';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Slider } from './ui/Slider';
 
 interface StyleCustomizerProps {
   style: SignatureStyle;
@@ -23,7 +21,7 @@ const FONT_OPTIONS = [
 ];
 
 export function StyleCustomizer({ style, onChange }: StyleCustomizerProps) {
-  const handleChange = (field: keyof SignatureStyle) => (value: string | number) => {
+  const handleChange = (field: keyof SignatureStyle) => (value: string) => {
     onChange({ ...style, [field]: value });
   };
 
@@ -65,50 +63,6 @@ export function StyleCustomizer({ style, onChange }: StyleCustomizerProps) {
           <ColorPicker
             color={style.secondaryColor}
             onChange={handleChange('secondaryColor')}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Image Width</Label>
-          <Slider
-            min={40}
-            max={200}
-            step={10}
-            value={[style.imageWidth]}
-            onValueChange={([value]) => handleChange('imageWidth')(value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Image Height</Label>
-          <Slider
-            min={40}
-            max={200}
-            step={10}
-            value={[style.imageHeight]}
-            onValueChange={([value]) => handleChange('imageHeight')(value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Image Rotation</Label>
-          <Slider
-            min={-180}
-            max={180}
-            step={10}
-            value={[style.imageRotation]}
-            onValueChange={([value]) => handleChange('imageRotation')(value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Image Zoom</Label>
-          <Slider
-            min={50}
-            max={200}
-            step={10}
-            value={[style.imageZoom * 100]}
-            onValueChange={([value]) => handleChange('imageZoom')(value / 100)}
           />
         </div>
 

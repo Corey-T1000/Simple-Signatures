@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -18,6 +18,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
     const isVertical = template.layout === 'vertical';
     const imageClass = template.imageStyle === 'rounded' ? 'border-radius: 50%;' : 'border-radius: 4px;';
     const spacing = template.contentStyle === 'spacious' ? '16px' : '8px';
+    const imageSize = 100 * template.imageScale;
 
     const html = `
       <table cellpadding="0" cellspacing="0" border="0" style="
@@ -38,12 +39,11 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                     <img 
                       src="${data.photo}" 
                       alt="${data.fullName}"
-                      width="${style.imageWidth}"
-                      height="${style.imageHeight}"
+                      width="${imageSize}"
+                      height="${imageSize}"
                       style="
                         ${imageClass}
-                        object-fit: ${style.imageFit};
-                        transform: rotate(${style.imageRotation}deg) scale(${style.imageZoom});
+                        object-fit: ${template.imageFit};
                       "
                     />
                   ` : ''}

@@ -14,11 +14,7 @@ export interface SignatureStyle {
   fontFamily: string;
   primaryColor: string;
   secondaryColor: string;
-  imageWidth: number;
-  imageHeight: number;
   imageFit: 'cover' | 'contain' | 'fill';
-  imageRotation: number;
-  imageZoom: number;
 }
 
 export interface SignatureTemplate {
@@ -48,4 +44,12 @@ export interface ImageSettings {
   backgroundOpacity: number;
   backgroundBlur: number;
   lockAspectRatio: boolean;
+}
+
+export interface SignatureElement {
+  id: string;
+  type: 'fullName' | 'jobTitle' | 'company' | 'email' | 'phone' | 'website' | 'linkedin' | 'twitter' | 'photo' | 'divider';
+  label: string;
+  visible: boolean;
+  required?: boolean;
 }

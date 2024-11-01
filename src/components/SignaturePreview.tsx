@@ -1,4 +1,3 @@
- import React from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
 import { Mail, Phone, Globe, Linkedin, Twitter } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -44,6 +43,8 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
 
   const { top, right, bottom, left } = template.padding;
 
+  const imageSize = 100 * template.imageScale;
+
   return (
     <div 
       className={cn(
@@ -69,10 +70,9 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                 template.imageStyle === 'rounded' ? 'rounded-full' : 'rounded-md'
               )}
               style={{
-                width: `${style.imageWidth * template.imageScale}px`,
-                height: `${style.imageHeight * template.imageScale}px`,
+                width: `${imageSize}px`,
+                height: `${imageSize}px`,
                 objectFit: template.imageFit,
-                transform: `rotate(${style.imageRotation}deg) scale(${style.imageZoom})`,
               }}
             />
           </div>
