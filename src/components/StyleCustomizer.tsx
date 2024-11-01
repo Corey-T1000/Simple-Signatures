@@ -1,6 +1,11 @@
 import React from 'react';
 import { SignatureStyle } from '../types/signature';
 import { Input } from './ui/Input';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { ColorPicker } from './ui/ColorPicker';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Slider } from './ui/Slider';
 
 interface StyleCustomizerProps {
   style: SignatureStyle;
@@ -8,62 +13,123 @@ interface StyleCustomizerProps {
 }
 
 const FONT_OPTIONS = [
-  'Arial',
-  'Helvetica',
-  'Times New Roman',
-  'Georgia',
-  'Verdana',
+  { value: 'Arial, sans-serif', label: 'Arial' },
+  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
+  { value: 'Times New Roman, serif', label: 'Times New Roman' },
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: 'Verdana, sans-serif', label: 'Verdana' },
+  { value: 'system-ui, sans-serif', label: 'System UI' },
+  { value: 'Roboto, sans-serif', label: 'Roboto' },
+  { value: 'Inter, sans-serif', label: 'Inter' },
 ];
 
 export function StyleCustomizer({ style, onChange }: StyleCustomizerProps) {
-  const handleChange = (field: keyof SignatureStyle) => (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
-  ) => {
-    onChange({ ...style, [field]: e.target.value });
+  const handleChange = (field: keyof SignatureStyle) => (value: string | number) => {
+    onChange({ ...style, [field]: value });
   };
 
   return (
-    <div className="space-y-4 p-6 bg-white rounded-lg shadow-sm">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Style Customization</h2>
-      
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-700">
-          Font Family
-        </label>
-        <select
-          value={style.fontFamily}
-          onChange={handleChange('fontFamily')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          {FONT_OPTIONS.map(font => (
-            <option key={font} value={font}>{font}</option>
-          ))}
-        </select>
-      </div>
-      
-      <Input
-        label="Font Size"
-        type="text"
-        value={style.fontSize}
-        onChange={handleChange('fontSize')}
-        placeholder="14px"
-      />
-      
-      <Input
-        label="Primary Color"
-        type="color"
-        value={style.primaryColor}
-        onChange={handleChange('primaryColor')}
-      />
-      
-      <Input
-        label="Spacing"
-        type="number"
-        min="0"
-        max="40"
-        value={style.spacing}
-        onChange={handleChange('spacing')}
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Style Customization</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <Label>Font Family</Label>
+          <Select 
+            value={style.fontFamily} 
+            onValueChange={handleChange('fontFamily')}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select font" />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_OPTIONS.map(font => (
+                <SelectItem key={font.value} value={font.value}>
+                  {font.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Primary Color</Label>
+          <ColorPicker
+            color={style.primaryColor}
+            onChange={handleChange('primaryColor')}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Secondary Color</Label>
+          <ColorPicker
+            color={style.secondaryColor}
+            onChange={handleChange('secondaryColor')}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Image Width</Label>
+          <Slider
+            min={40}
+            max={200}
+            step={10}
+            value={[style.imageWidth]}
+            onValueChange={([value]) => handleChange('imageWidth')(value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Image Height</Label>
+          <Slider
+            min={40}
+            max={200}
+            step={10}
+            value={[style.imageHeight]}
+            onValueChange={([value]) => handleChange('imageHeight')(value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Image Rotation</Label>
+          <Slider
+            min={-180}
+            max={180}
+            step={10}
+            value={[style.imageRotation]}
+            onValueChange={([value]) => handleChange('imageRotation')(value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Image Zoom</Label>
+          <Slider
+            min={50}
+            max={200}
+            step={10}
+            value={[style.imageZoom * 100]}
+            onValueChange={([value]) => handleChange('imageZoom')(value / 100)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Image Fit</Label>
+          <Select 
+            value={style.imageFit} 
+            onValueChange={(value) => handleChange('imageFit')(value as 'cover' | 'contain' | 'fill')}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select fit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cover">Cover (Crop to Fill)</SelectItem>
+              <SelectItem value="contain">Contain (Show All)</SelectItem>
+              <SelectItem value="fill">Fill (Stretch)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

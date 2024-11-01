@@ -1,6 +1,7 @@
-import React from 'react';
+ import React from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
 import { Mail, Phone, Globe, Linkedin, Twitter } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 interface SignaturePreviewProps {
   data: SignatureData;
@@ -17,22 +18,22 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
     
     switch (type) {
       case 'email':
-        return <Mail size={iconSize} color={iconColor} className="inline-block mr-2" />;
+        return <Mail size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
       case 'phone':
-        return <Phone size={iconSize} color={iconColor} className="inline-block mr-2" />;
+        return <Phone size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
       case 'website':
-        return <Globe size={iconSize} color={iconColor} className="inline-block mr-2" />;
+        return <Globe size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
       case 'linkedin':
-        return <Linkedin size={iconSize} color={iconColor} className="inline-block mr-2" />;
+        return <Linkedin size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
       case 'twitter':
-        return <Twitter size={iconSize} color={iconColor} className="inline-block mr-2" />;
+        return <Twitter size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
       default:
         return null;
     }
   };
 
   const containerClass = template.layout === 'horizontal' 
-    ? 'flex items-center gap-6' 
+    ? 'flex items-start gap-6' 
     : 'flex flex-col gap-4';
 
   const imageAlignmentClass = {
@@ -45,7 +46,10 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
 
   return (
     <div 
-      className="bg-white rounded-lg shadow-sm"
+      className={cn(
+        "bg-card rounded-lg",
+        "transition-colors duration-200"
+      )}
       style={{ 
         fontFamily: style.fontFamily,
         padding: `${top}px ${right}px ${bottom}px ${left}px`
@@ -53,11 +57,17 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
     >
       <div className={containerClass}>
         {data.photo && (
-          <div className={`flex-shrink-0 ${imageAlignmentClass}`}>
+          <div className={cn(
+            "flex-shrink-0",
+            imageAlignmentClass
+          )}>
             <img
               src={data.photo}
               alt={data.fullName}
-              className={template.imageStyle === 'rounded' ? 'rounded-full' : 'rounded-md'}
+              className={cn(
+                "object-cover",
+                template.imageStyle === 'rounded' ? 'rounded-full' : 'rounded-md'
+              )}
               style={{
                 width: `${style.imageWidth * template.imageScale}px`,
                 height: `${style.imageHeight * template.imageScale}px`,
@@ -68,20 +78,30 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
           </div>
         )}
         
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-0">
           <div>
-            <h2 className="text-xl font-bold" style={{ color: style.primaryColor }}>
+            <h2 
+              className="text-xl font-bold leading-none mb-1"
+              style={{ color: style.primaryColor }}
+            >
               {data.fullName}
             </h2>
-            <p className="text-gray-600">{data.jobTitle}</p>
-            <p className="font-semibold">{data.company}</p>
+            <p className="text-muted-foreground leading-snug">{data.jobTitle}</p>
+            <p className="font-semibold text-card-foreground">{data.company}</p>
           </div>
 
-          <div className={`flex flex-col gap-1 text-sm ${template.contentStyle === 'spacious' ? 'mt-4' : 'mt-2'}`}>
+          <div className={cn(
+            "flex flex-col gap-1.5 text-sm",
+            template.contentStyle === 'spacious' ? 'mt-4' : 'mt-2'
+          )}>
             {data.email && (
               <div className="flex items-center">
                 {getIcon('email')}
-                <a href={`mailto:${data.email}`} style={{ color: style.secondaryColor }}>
+                <a 
+                  href={`mailto:${data.email}`}
+                  className="hover:underline truncate"
+                  style={{ color: style.secondaryColor }}
+                >
                   {data.email}
                 </a>
               </div>
@@ -90,7 +110,11 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
             {data.phone && (
               <div className="flex items-center">
                 {getIcon('phone')}
-                <a href={`tel:${data.phone}`} style={{ color: style.secondaryColor }}>
+                <a 
+                  href={`tel:${data.phone}`}
+                  className="hover:underline truncate"
+                  style={{ color: style.secondaryColor }}
+                >
                   {data.phone}
                 </a>
               </div>
@@ -99,7 +123,13 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
             {data.website && (
               <div className="flex items-center">
                 {getIcon('website')}
-                <a href={data.website} target="_blank" rel="noopener noreferrer" style={{ color: style.secondaryColor }}>
+                <a 
+                  href={data.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline truncate"
+                  style={{ color: style.secondaryColor }}
+                >
                   {data.website.replace(/^https?:\/\//, '')}
                 </a>
               </div>
@@ -108,7 +138,13 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
             {data.linkedin && (
               <div className="flex items-center">
                 {getIcon('linkedin')}
-                <a href={data.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: style.secondaryColor }}>
+                <a 
+                  href={data.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  style={{ color: style.secondaryColor }}
+                >
                   LinkedIn
                 </a>
               </div>
@@ -117,7 +153,13 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
             {data.twitter && (
               <div className="flex items-center">
                 {getIcon('twitter')}
-                <a href={data.twitter} target="_blank" rel="noopener noreferrer" style={{ color: style.secondaryColor }}>
+                <a 
+                  href={data.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  style={{ color: style.secondaryColor }}
+                >
                   Twitter
                 </a>
               </div>

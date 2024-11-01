@@ -1,5 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Check, Copy } from 'lucide-react';
+import { cn } from '../lib/utils';
 
 interface SignatureCodeProps {
   template: SignatureTemplate;
@@ -8,6 +12,8 @@ interface SignatureCodeProps {
 }
 
 export function SignatureCode({ template, data, style }: SignatureCodeProps) {
+  const [copied, setCopied] = useState(false);
+
   const generateHtml = useCallback(() => {
     const isVertical = template.layout === 'vertical';
     const imageClass = template.imageStyle === 'rounded' ? 'border-radius: 50%;' : 'border-radius: 4px;';
@@ -130,23 +136,43 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
     return html;
   }, [template, data, style]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(generateHtml());
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(generateHtml());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <pre className="p-4 bg-gray-50 rounded-lg overflow-x-auto text-sm font-mono whitespace-pre-wrap break-all max-h-[400px] overflow-y-auto">
-          {generateHtml()}
-        </pre>
-        <button
-          onClick={handleCopy}
-          className="absolute top-2 right-2 px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-        >
-          Copy HTML
-        </button>
-      </div>
-    </div>
+    <Card>
+      <CardContent className="p-0">
+        <div className="relative">
+          <pre className={cn(
+            "p-4 rounded-lg font-mono text-sm whitespace-pre-wrap break-all",
+            "max-h-[400px] overflow-y-auto",
+            "bg-muted/50 text-muted-foreground"
+          )}>
+            {generateHtml()}
+          </pre>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="absolute top-2 right-2"
+            onClick={handleCopy}
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 mr-1" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-1" />
+                Copy HTML
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,10 @@
 import React from 'react';
 import { SignatureTemplate } from '../types/signature';
 import { Slider } from './ui/Slider';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Checkbox } from './ui/checkbox';
+import { CardHeader, CardTitle } from './ui/card';
 
 interface TemplateCustomizerProps {
   template: SignatureTemplate;
@@ -27,138 +31,140 @@ export function TemplateCustomizer({ template, onTemplateChange }: TemplateCusto
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold text-gray-900">Template Settings</h2>
+      <CardHeader>
+        <CardTitle>Template Settings</CardTitle>
+      </CardHeader>
       
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Layout</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            value={template.layout}
-            onChange={(e) => handleChange('layout', e.target.value)}
-          >
-            <option value="horizontal">Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label>Layout</Label>
+          <Select value={template.layout} onValueChange={(value) => handleChange('layout', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select layout" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="horizontal">Horizontal</SelectItem>
+              <SelectItem value="vertical">Vertical</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image Style</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            value={template.imageStyle}
-            onChange={(e) => handleChange('imageStyle', e.target.value)}
-          >
-            <option value="rounded">Rounded</option>
-            <option value="square">Square</option>
-          </select>
+        <div className="space-y-2">
+          <Label>Image Style</Label>
+          <Select value={template.imageStyle} onValueChange={(value) => handleChange('imageStyle', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select image style" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="rounded">Rounded</SelectItem>
+              <SelectItem value="square">Square</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image Fit</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            value={template.imageFit}
-            onChange={(e) => handleChange('imageFit', e.target.value as 'cover' | 'contain' | 'fill')}
-          >
-            <option value="cover">Cover (Crop to Fill)</option>
-            <option value="contain">Contain (Show All)</option>
-            <option value="fill">Fill (Stretch)</option>
-          </select>
+        <div className="space-y-2">
+          <Label>Image Fit</Label>
+          <Select value={template.imageFit} onValueChange={(value) => handleChange('imageFit', value as 'cover' | 'contain' | 'fill')}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select image fit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cover">Cover (Crop to Fill)</SelectItem>
+              <SelectItem value="contain">Contain (Show All)</SelectItem>
+              <SelectItem value="fill">Fill (Stretch)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image Alignment</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            value={template.imageAlignment}
-            onChange={(e) => handleChange('imageAlignment', e.target.value)}
-          >
-            <option value="start">Top/Left</option>
-            <option value="center">Center</option>
-            <option value="end">Bottom/Right</option>
-          </select>
+        <div className="space-y-2">
+          <Label>Image Alignment</Label>
+          <Select value={template.imageAlignment} onValueChange={(value) => handleChange('imageAlignment', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select image alignment" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="start">Top/Left</SelectItem>
+              <SelectItem value="center">Center</SelectItem>
+              <SelectItem value="end">Bottom/Right</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image Scale</label>
+        <div className="space-y-2">
+          <Label>Image Scale</Label>
           <Slider
-            label="Scale"
-            min={0.5}
-            max={2}
-            step={0.1}
-            value={template.imageScale}
-            onChange={(value) => handleChange('imageScale', value)}
+            min={50}
+            max={200}
+            step={10}
+            value={[template.imageScale * 100]}
+            onValueChange={([value]) => handleChange('imageScale', value / 100)}
+            className="pt-2"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Content Style</label>
-          <select
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            value={template.contentStyle}
-            onChange={(e) => handleChange('contentStyle', e.target.value)}
-          >
-            <option value="compact">Compact</option>
-            <option value="spacious">Spacious</option>
-          </select>
+        <div className="space-y-2">
+          <Label>Content Style</Label>
+          <Select value={template.contentStyle} onValueChange={(value) => handleChange('contentStyle', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select content style" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="compact">Compact</SelectItem>
+              <SelectItem value="spacious">Spacious</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Show Icons</label>
-          <input
-            type="checkbox"
-            className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="show-icons"
             checked={template.showIcons}
-            onChange={(e) => handleChange('showIcons', e.target.checked)}
+            onCheckedChange={(checked) => handleChange('showIcons', checked)}
           />
+          <Label htmlFor="show-icons">Show Icons</Label>
         </div>
 
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-700">Padding</label>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs text-gray-500">Top</label>
+          <Label>Padding</Label>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Top</Label>
               <Slider
-                label="Top"
                 min={0}
                 max={48}
                 step={1}
-                value={template.padding.top}
-                onChange={(value) => handlePaddingChange('top', value)}
+                value={[template.padding.top]}
+                onValueChange={([value]) => handlePaddingChange('top', value)}
               />
             </div>
-            <div>
-              <label className="block text-xs text-gray-500">Right</label>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Right</Label>
               <Slider
-                label="Right"
                 min={0}
                 max={48}
                 step={1}
-                value={template.padding.right}
-                onChange={(value) => handlePaddingChange('right', value)}
+                value={[template.padding.right]}
+                onValueChange={([value]) => handlePaddingChange('right', value)}
               />
             </div>
-            <div>
-              <label className="block text-xs text-gray-500">Bottom</label>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Bottom</Label>
               <Slider
-                label="Bottom"
                 min={0}
                 max={48}
                 step={1}
-                value={template.padding.bottom}
-                onChange={(value) => handlePaddingChange('bottom', value)}
+                value={[template.padding.bottom]}
+                onValueChange={([value]) => handlePaddingChange('bottom', value)}
               />
             </div>
-            <div>
-              <label className="block text-xs text-gray-500">Left</label>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Left</Label>
               <Slider
-                label="Left"
                 min={0}
                 max={48}
                 step={1}
-                value={template.padding.left}
-                onChange={(value) => handlePaddingChange('left', value)}
+                value={[template.padding.left]}
+                onValueChange={([value]) => handlePaddingChange('left', value)}
               />
             </div>
           </div>

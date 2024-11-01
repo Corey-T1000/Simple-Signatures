@@ -37,3 +37,15 @@ export interface SignatureTemplate {
     left: number;
   };
 }
+
+export interface ImageSettings {
+  width: number;
+  height: number;
+  rotation: number;
+  zoom: number;
+  objectFit: 'cover' | 'contain' | 'fill';
+  backgroundColor: string;
+  backgroundOpacity: number;
+  backgroundBlur: number;
+  lockAspectRatio: boolean;
+}
