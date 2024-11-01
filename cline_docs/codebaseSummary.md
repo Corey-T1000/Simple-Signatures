@@ -6,16 +6,12 @@
   - Scale factor adjustment
   - Preview integration
   - shadcn/ui controls
-- ImageSettings: Controls for image manipulation
-  - Size controls
-  - Position adjustment
-  - Format settings
-  - Modern UI elements
-- SignatureCode: Generates and displays HTML code
-  - Code formatting
-  - Copy functionality
-  - Preview integration
-  - Enhanced display
+  - Dark mode support
+- StyleCustomizer: Controls for style customization
+  - Font selection
+  - Color picker
+  - Image settings
+  - Dark mode support
 - SignatureForm: Manages signature information input
   - Form validation
   - Data management
@@ -25,31 +21,32 @@
   - Live updates
   - Responsive display
   - Template rendering
-  - Optimized layout
-- StyleCustomizer: Controls for style customization
-  - Color selection
-  - Font management
-  - Spacing controls
-  - Modern UI controls
+  - Dark mode support
+- SignatureCode: Generates and displays HTML code
+  - Code formatting
+  - Copy functionality
+  - Preview integration
+  - Enhanced display
 - TemplateCustomizer: Advanced template options
   - Layout controls
   - Padding adjustment
   - Alignment settings
   - Enhanced UI
-- TemplateSelector: Template selection interface
-  - Template previews
-  - Selection management
-  - Customization options
-  - Improved visualization
 
-### UI Components (To be migrated to shadcn/ui)
-- ColorPicker: Custom color selection component
-- Input: Reusable input component
-- Slider: Reusable slider component
-- New shadcn/ui components to be added
+### UI Components (shadcn/ui)
+- Button: Enhanced button component
+- Card: Container component
+- Checkbox: Toggle component
+- ColorPicker: Custom color selection
+- Input: Form input component
+- Label: Form label component
+- Select: Dropdown component
+- Slider: Range input component
+- Tabs: Content organization
+- All components support dark mode
 
 ### Types
-- signature.ts: Contains type definitions for signature data
+- signature.ts: Contains type definitions
   - Template interfaces
   - Style definitions
   - Configuration types
@@ -57,59 +54,57 @@
 
 ### Utils
 - generateHtml.ts: HTML generation utility
-  - Template processing
-  - Style application
-  - Code formatting
-
-## Data Flow
-1. User inputs signature information via enhanced SignatureForm
-2. Customization options modified through:
-   - Improved ImageCustomizer for image settings
-   - Enhanced StyleCustomizer for visual styling
-   - Optimized TemplateCustomizer for layout options
-3. Changes reflected in real-time via SignaturePreview
-4. HTML code generated and displayed in SignatureCode component
+- utils.ts: Shared utility functions
+  - Class name management
+  - Theme utilities
+  - Type helpers
 
 ## Project Structure
 ```
 src/
 ├── components/          # React components
 │   ├── ui/             # shadcn/ui components
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── checkbox.tsx
 │   │   ├── ColorPicker.tsx
 │   │   ├── Input.tsx
-│   │   └── Slider.tsx
+│   │   ├── label.tsx
+│   │   ├── select.tsx
+│   │   ├── Slider.tsx
+│   │   └── tabs.tsx
 │   ├── ImageCustomizer.tsx
-│   ├── ImageSettings.tsx
 │   ├── SignatureCode.tsx
 │   ├── SignatureForm.tsx
 │   ├── SignaturePreview.tsx
 │   ├── StyleCustomizer.tsx
-│   ├── TemplateCustomizer.tsx
-│   └── TemplateSelector.tsx
-├── types/              # TypeScript type definitions
+│   └── TemplateCustomizer.tsx
+├── types/              # TypeScript definitions
 │   └── signature.ts
 ├── utils/              # Utility functions
 │   └── generateHtml.ts
-├── styles/             # Theme configuration
-│   └── theme.css
-├── App.tsx             # Main application component
-└── main.tsx           # Application entry point
+├── lib/               # Shared utilities
+│   └── utils.ts
+├── styles/            # Theme configuration
+│   └── globals.css
+├── App.tsx           # Main application
+└── main.tsx         # Entry point
 ```
 
 ## Development Status
 
 ### Current Focus
-1. UI Enhancement
-   - shadcn/ui integration
-   - Layout optimization
-   - Space utilization
-   - Component migration
+1. Feature Implementation
+   - Image upload
+   - Local storage
+   - Export options
+   - Error handling
 
-2. Styling Updates
-   - Modern component library
-   - Consistent theming
-   - Improved visual hierarchy
-   - Enhanced user experience
+2. Testing Infrastructure
+   - Unit tests
+   - Component tests
+   - Integration tests
+   - Visual testing
 
 ### Implemented Features
 1. Core Functionality
@@ -119,75 +114,69 @@ src/
    - HTML generation
 
 2. UI Components
-   - Color picker
-   - Input controls
-   - Slider component
-   - Template selector
+   - shadcn/ui integration
+   - Dark mode support
+   - Enhanced controls
+   - Improved layout
 
 3. Customization Options
-   - Image alignment
-   - Scale adjustment
-   - Padding controls
-   - Style customization
+   - Image settings
+   - Style controls
+   - Template options
+   - Color management
 
 ### Pending Improvements
-1. UI Migration
-   - shadcn/ui integration
-   - Layout optimization
-   - Component updates
-   - Space utilization
+1. Additional Features
+   - Image upload
+   - Local storage
+   - Export options
+   - Error handling
 
-2. Error Handling
-   - Error boundaries
-   - Input validation
-   - Error recovery
-   - User feedback
-
-3. Testing
+2. Testing
+   - Test setup
    - Unit tests
    - Component tests
    - Integration tests
-   - Test utilities
 
-4. Documentation
-   - JSDoc comments
+3. Documentation
    - Usage examples
-   - Development guidelines
-   - Type documentation
+   - API documentation
+   - Development guides
+   - Testing guides
 
-5. Performance
-   - Component optimization
+4. Performance
+   - Optimization
    - Code splitting
-   - Lazy loading
-   - Bundle optimization
+   - Bundle analysis
+   - Load time
 
 ## Development Guidelines
 1. Component Creation
-   - Use shadcn/ui components
-   - Implement proper typing
-   - Add error handling
+   - Use shadcn/ui
+   - Implement dark mode
+   - Add proper types
    - Include documentation
 
 2. Type System
-   - Define clear interfaces
+   - Define interfaces
    - Use strict typing
-   - Document type definitions
-   - Implement proper validation
+   - Document types
+   - Validate props
 
 3. Testing Requirements
    - Write unit tests
-   - Test component rendering
-   - Verify error handling
-   - Document test cases
+   - Test components
+   - Verify dark mode
+   - Check accessibility
 
 4. Code Quality
-   - Follow ESLint rules
-   - Maintain consistent formatting
-   - Write clear documentation
-   - Implement error handling
+   - Follow ESLint
+   - Use Prettier
+   - Add documentation
+   - Handle errors
 
 5. UI Standards
-   - Use shadcn/ui components
-   - Follow spacing guidelines
-   - Maintain visual hierarchy
-   - Ensure responsive design
+   - Use shadcn/ui
+   - Support dark mode
+   - Follow spacing
+   - Ensure accessibility

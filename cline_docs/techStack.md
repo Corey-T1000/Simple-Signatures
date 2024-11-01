@@ -5,6 +5,7 @@
   - Tailwind CSS
   - shadcn/ui components
   - CSS Variables for theming
+  - Dark mode support
 - State Management: React Hooks (useState, useEffect)
 - Component Architecture: Functional Components
 
@@ -20,10 +21,14 @@
 - PostCSS for CSS processing
 - Tailwind for utility-first CSS
 - shadcn/ui for component library
+- Radix UI for accessible primitives
 - TypeScript for type safety
-- Vite for fast development and building
+- Vite for fast development
 - ESLint for code quality
-- Prettier for consistent formatting
+- Prettier for formatting
+- Lucide for icons
+- class-variance-authority for component variants
+- clsx and tailwind-merge for class management
 
 ## Architecture Decisions
 1. Component Structure
@@ -39,19 +44,22 @@
    - /src/types: TypeScript type definitions
    - /src/utils: Utility functions
    - /src/styles: Theme configuration
+   - /cline_docs: Project documentation
 
 3. Styling Approach
    - shadcn/ui for consistent component styling
    - Tailwind CSS for utility classes
    - CSS Variables for theming
+   - Dark mode support
    - PostCSS for processing
    - Responsive design principles
 
 4. Type Safety
    - Strict TypeScript configuration
-   - Separate type definitions for signatures
-   - Type-safe props and state management
+   - Separate type definitions
+   - Type-safe props
    - Interface-first development
+   - Proper type exports
 
 ## Development Requirements
 1. Code Quality
@@ -59,13 +67,14 @@
    - Prettier formatting
    - TypeScript strict mode
    - Component documentation
+   - Proper type definitions
 
 2. Testing Strategy
    - Unit tests for utilities
    - Component testing
-   - Integration tests for workflows
-   - Snapshot testing for UI
-   - Test coverage requirements
+   - Integration tests
+   - Accessibility testing
+   - Visual regression tests
 
 3. Error Handling
    - React Error Boundaries
@@ -90,7 +99,10 @@
 
 6. UI/UX Standards
    - Consistent component styling
+   - Dark mode support
    - Efficient space utilization
    - Responsive layouts
    - Accessibility compliance
    - Visual hierarchy
+   - Color contrast
+   - Focus management
