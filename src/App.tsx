@@ -37,6 +37,7 @@ const defaultTemplate: SignatureTemplate = {
   imageStyle: 'rounded',
   contentStyle: 'spacious',
   showIcons: true,
+  iconStyle: 'outline',
   imageAlignment: 'center',
   imageScale: 1,
   imageFit: 'cover',

@@ -69,8 +69,12 @@ export function parseSignatureHtml(html: string): ParsedSignature | null {
       return 'compact';
     })();
 
-    // Check for icons
+    // Check for icons and determine icon style
     const hasIcons = doc.querySelector('img[src*="data:image/svg+xml"]') !== null;
+    const iconStyle = (() => {
+      const iconSvg = doc.querySelector('img[src*="data:image/svg+xml"]')?.getAttribute('src') || '';
+      return iconSvg.includes('fill="none"') ? 'outline' : 'solid';
+    })();
 
     // Extract image scale
     const imageScale = (() => {
@@ -131,6 +135,7 @@ export function parseSignatureHtml(html: string): ParsedSignature | null {
         imageStyle,
         contentStyle: contentSpacing,
         showIcons: hasIcons,
+        iconStyle,
         imageAlignment,
         imageScale,
         imageFit,

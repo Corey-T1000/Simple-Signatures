@@ -15,17 +15,24 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
   const getIcon = (type: string) => {
     if (!template.showIcons) return null;
     
+    const iconProps = {
+      size: iconSize,
+      color: iconColor,
+      className: "shrink-0 mr-2",
+      fill: template.iconStyle === 'solid' ? iconColor : 'none'
+    };
+    
     switch (type) {
       case 'email':
-        return <Mail size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
+        return <Mail {...iconProps} />;
       case 'phone':
-        return <Phone size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
+        return <Phone {...iconProps} />;
       case 'website':
-        return <Globe size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
+        return <Globe {...iconProps} />;
       case 'linkedin':
-        return <Linkedin size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
+        return <Linkedin {...iconProps} />;
       case 'twitter':
-        return <Twitter size={iconSize} color={iconColor} className="shrink-0 mr-2" />;
+        return <Twitter {...iconProps} />;
       default:
         return null;
     }
@@ -42,7 +49,6 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
   }[template.imageAlignment];
 
   const { top, right, bottom, left } = template.padding;
-
   const imageSize = 100 * template.imageScale;
 
   return (

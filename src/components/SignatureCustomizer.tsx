@@ -175,13 +175,33 @@ export function SignatureCustomizer({ style, template, onStyleChange, onTemplate
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="show-icons"
-                checked={template.showIcons}
-                onCheckedChange={(checked) => handleTemplateChange('showIcons', checked)}
-              />
-              <Label htmlFor="show-icons">Show Icons</Label>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="show-icons"
+                  checked={template.showIcons}
+                  onCheckedChange={(checked) => handleTemplateChange('showIcons', checked)}
+                />
+                <Label htmlFor="show-icons">Show Icons</Label>
+              </div>
+
+              {template.showIcons && (
+                <div className="space-y-2">
+                  <Label>Icon Style</Label>
+                  <Select 
+                    value={template.iconStyle} 
+                    onValueChange={(value) => handleTemplateChange('iconStyle', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select icon style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="outline">Outline</SelectItem>
+                      <SelectItem value="solid">Solid</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
         </div>
