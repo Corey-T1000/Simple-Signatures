@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
 import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -14,7 +14,7 @@ interface SignatureCodeProps {
 export function SignatureCode({ template, data, style }: SignatureCodeProps) {
   const [copied, setCopied] = useState(false);
 
-  const generateSvgIcon = (type: string) => {
+  const generateSvgIcon = useCallback((type: string) => {
     const fill = template.iconStyle === 'solid' ? style.primaryColor : 'none';
     const stroke = style.primaryColor;
 
@@ -28,12 +28,12 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
       default:
         return '';
     }
-  };
+  }, [template.iconStyle, style.primaryColor]);
 
   const generateHtml = useCallback(() => {
     const isVertical = template.layout === 'vertical';
-    const imageClass = template.imageStyle === 'rounded' ? 'border-radius: 50%;' : 'border-radius: 4px;';
-    const spacing = template.contentStyle === 'spacious' ? '16px' : '8px';
+    const imageClass = template.imageStyle === 'rounded' ? 'border-radius: 50%;' : 'border-radius: 8px;';
+    const spacing = template.contentStyle === 'spacious' ? '20px' : '12px';
     const imageSize = 100 * template.imageScale;
 
     const html = `
@@ -60,6 +60,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                       style="
                         ${imageClass}
                         object-fit: ${template.imageFit};
+                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
                       "
                     />
                   ` : ''}
@@ -69,17 +70,18 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                   <table cellpadding="0" cellspacing="0" border="0">
                     <tr>
                       <td style="
-                        font-size: 18px;
+                        font-size: 20px;
                         font-weight: bold;
                         color: ${style.primaryColor};
-                        padding-bottom: 4px;
+                        padding-bottom: 6px;
+                        letter-spacing: -0.02em;
                       ">
                         ${data.fullName}
                       </td>
                     </tr>
                     ${data.jobTitle ? `
                       <tr>
-                        <td style="padding-bottom: 4px; color: #666666;">
+                        <td style="padding-bottom: 6px; color: #666666;">
                           ${data.jobTitle}
                         </td>
                       </tr>
@@ -96,13 +98,17 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                         <table cellpadding="0" cellspacing="0" border="0">
                           ${data.email ? `
                             <tr>
-                              <td style="padding: 2px 0;">
+                              <td style="padding: 3px 0;">
                                 ${template.showIcons ? `
                                   <img src="data:image/svg+xml,${encodeURIComponent(
                                     generateSvgIcon('email')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 6px; vertical-align: middle;" />
+                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 ` : ''}
-                                <a href="mailto:${data.email}" style="color: ${style.secondaryColor}; text-decoration: none;">
+                                <a href="mailto:${data.email}" style="
+                                  color: ${style.secondaryColor}; 
+                                  text-decoration: none;
+                                  transition: opacity 0.2s ease-in-out;
+                                ">
                                   ${data.email}
                                 </a>
                               </td>
@@ -110,13 +116,17 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                           ` : ''}
                           ${data.phone ? `
                             <tr>
-                              <td style="padding: 2px 0;">
+                              <td style="padding: 3px 0;">
                                 ${template.showIcons ? `
                                   <img src="data:image/svg+xml,${encodeURIComponent(
                                     generateSvgIcon('phone')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 6px; vertical-align: middle;" />
+                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 ` : ''}
-                                <a href="tel:${data.phone}" style="color: ${style.secondaryColor}; text-decoration: none;">
+                                <a href="tel:${data.phone}" style="
+                                  color: ${style.secondaryColor}; 
+                                  text-decoration: none;
+                                  transition: opacity 0.2s ease-in-out;
+                                ">
                                   ${data.phone}
                                 </a>
                               </td>
@@ -124,14 +134,44 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                           ` : ''}
                           ${data.website ? `
                             <tr>
-                              <td style="padding: 2px 0;">
+                              <td style="padding: 3px 0;">
                                 ${template.showIcons ? `
                                   <img src="data:image/svg+xml,${encodeURIComponent(
                                     generateSvgIcon('website')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 6px; vertical-align: middle;" />
+                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 ` : ''}
-                                <a href="${data.website}" style="color: ${style.secondaryColor}; text-decoration: none;">
+                                <a href="${data.website}" style="
+                                  color: ${style.secondaryColor}; 
+                                  text-decoration: none;
+                                  transition: opacity 0.2s ease-in-out;
+                                ">
                                   ${data.website.replace(/^https?:\/\//, '')}
+                                </a>
+                              </td>
+                            </tr>
+                          ` : ''}
+                          ${data.ctaText ? `
+                            <tr>
+                              <td style="padding: 3px 0;">
+                                <a href="${data.ctaLink}" style="
+                                  color: ${style.secondaryColor}; 
+                                  text-decoration: none;
+                                  transition: opacity 0.2s ease-in-out;
+                                ">
+                                  ${data.ctaText}
+                                </a>
+                              </td>
+                            </tr>
+                          ` : ''}
+                          ${data.additionalCtaText ? `
+                            <tr>
+                              <td style="padding: 3px 0;">
+                                <a href="${data.additionalCtaLink}" style="
+                                  color: ${style.secondaryColor}; 
+                                  text-decoration: none;
+                                  transition: opacity 0.2s ease-in-out;
+                                ">
+                                  ${data.additionalCtaText}
                                 </a>
                               </td>
                             </tr>
@@ -150,7 +190,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
     `.trim();
 
     return html;
-  }, [template, data, style]);
+  }, [template, data, style, generateSvgIcon]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(generateHtml());
@@ -159,34 +199,39 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
   };
 
   return (
-    <Card>
-      <CardContent className="p-0">
-        <div className="relative">
+    <Card className="animate-in scale-in shadow-lg">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+        <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          HTML Code
+        </CardTitle>
+        <Button
+          size="sm"
+          variant={copied ? "success" : "outline"}
+          className="hover-lift transition-all duration-200"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <>
+              <Check className="h-4 w-4 mr-2" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy HTML
+            </>
+          )}
+        </Button>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="relative rounded-lg overflow-hidden shadow-md bg-muted/30 hover:bg-muted/40 transition-colors duration-200">
           <pre className={cn(
-            "p-4 rounded-lg font-mono text-sm whitespace-pre-wrap break-all",
+            "p-6 font-mono text-sm whitespace-pre-wrap break-all",
             "max-h-[400px] overflow-y-auto",
-            "bg-muted/50 text-muted-foreground"
+            "text-muted-foreground scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent"
           )}>
             {generateHtml()}
           </pre>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="absolute top-2 right-2"
-            onClick={handleCopy}
-          >
-            {copied ? (
-              <>
-                <Check className="h-4 w-4 mr-1" />
-                Copied
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4 mr-1" />
-                Copy HTML
-              </>
-            )}
-          </Button>
         </div>
       </CardContent>
     </Card>

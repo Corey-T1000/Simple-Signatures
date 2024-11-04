@@ -3,7 +3,9 @@ export interface SignatureData {
   fullName: string;
   jobTitle: string;
   company: string;
+  email: string;
   phone: string;
+  website: string;
   ctaText: string;
   ctaLink: string;
   additionalCtaText: string;
@@ -22,6 +24,7 @@ export interface SignatureTemplate {
   layout: 'horizontal' | 'vertical';
   imageStyle: 'rounded' | 'square';
   contentStyle: 'compact' | 'spacious';
+  titleLayout: 'stacked' | 'inline';
   ctaLayout: 'stacked' | 'inline';
   showIcons: boolean;
   iconStyle: 'outline' | 'solid';
@@ -50,7 +53,7 @@ export interface ImageSettings {
 
 export interface SignatureElement {
   id: string;
-  type: 'photo' | 'fullName' | 'jobTitle' | 'company' | 'phone' | 'cta' | 'additionalCta' | 'divider';
+  type: 'photo' | 'fullName' | 'jobTitle' | 'company' | 'email' | 'phone' | 'website' | 'cta' | 'additionalCta' | 'divider';
   label: string;
   visible: boolean;
   required?: boolean;

@@ -1,12 +1,15 @@
-import { SignatureStyle } from '../types/signature';
+import { SignatureStyle, SignatureTemplate } from '../types/signature';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ColorPicker } from './ui/ColorPicker';
+import { Checkbox } from './ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 interface StyleCustomizerProps {
   style: SignatureStyle;
-  onChange: (style: SignatureStyle) => void;
+  template: SignatureTemplate;
+  onStyleChange: (style: SignatureStyle) => void;
+  onTemplateChange: (template: SignatureTemplate) => void;
 }
 
 const FONT_OPTIONS = [
@@ -20,24 +23,33 @@ const FONT_OPTIONS = [
   { value: 'Inter, sans-serif', label: 'Inter' },
 ];
 
-export function StyleCustomizer({ style, onChange }: StyleCustomizerProps) {
-  const handleChange = (field: keyof SignatureStyle) => (value: string) => {
-    onChange({ ...style, [field]: value });
+export function StyleCustomizer({ style, template, onStyleChange, onTemplateChange }: StyleCustomizerProps) {
+  const handleStyleChange = (field: keyof SignatureStyle) => (value: string) => {
+    onStyleChange({ ...style, [field]: value });
+  };
+
+  const handleTemplateChange = (key: keyof SignatureTemplate, value: unknown) => {
+    onTemplateChange({
+      ...template,
+      [key]: value
+    });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Style Customization</CardTitle>
+    <Card className="animate-in scale-in shadow-lg">
+      <CardHeader className="space-y-2 pb-4 border-b">
+        <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          Style Options
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label>Font Family</Label>
+      <CardContent className="pt-6 space-y-6">
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Font Family</Label>
           <Select 
             value={style.fontFamily} 
-            onValueChange={handleChange('fontFamily')}
+            onValueChange={handleStyleChange('fontFamily')}
           >
-            <SelectTrigger>
+            <SelectTrigger className="hover-lift focus-ring">
               <SelectValue placeholder="Select font" />
             </SelectTrigger>
             <SelectContent>
@@ -50,38 +62,51 @@ export function StyleCustomizer({ style, onChange }: StyleCustomizerProps) {
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label>Primary Color</Label>
-          <ColorPicker
-            color={style.primaryColor}
-            onChange={handleChange('primaryColor')}
-          />
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Name Color</Label>
+            <ColorPicker
+              color={style.primaryColor}
+              onChange={handleStyleChange('primaryColor')}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Text Color</Label>
+            <ColorPicker
+              color={style.secondaryColor}
+              onChange={handleStyleChange('secondaryColor')}
+            />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>Secondary Color</Label>
-          <ColorPicker
-            color={style.secondaryColor}
-            onChange={handleChange('secondaryColor')}
+        <div className="flex items-center space-x-3 p-4 bg-muted/10 rounded-lg hover-lift transition-all duration-200">
+          <Checkbox
+            id="show-icons"
+            checked={template.showIcons}
+            onCheckedChange={(checked) => handleTemplateChange('showIcons', checked)}
+            className="focus-ring"
           />
+          <Label htmlFor="show-icons" className="text-sm font-medium cursor-pointer">Show Icons</Label>
         </div>
 
-        <div className="space-y-2">
-          <Label>Image Fit</Label>
-          <Select 
-            value={style.imageFit} 
-            onValueChange={(value) => handleChange('imageFit')(value as 'cover' | 'contain' | 'fill')}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select fit" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cover">Cover (Crop to Fill)</SelectItem>
-              <SelectItem value="contain">Contain (Show All)</SelectItem>
-              <SelectItem value="fill">Fill (Stretch)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {template.showIcons && (
+          <div className="space-y-3 animate-in slide-in-from-top">
+            <Label className="text-sm font-medium">Icon Style</Label>
+            <Select 
+              value={template.iconStyle} 
+              onValueChange={(value) => handleTemplateChange('iconStyle', value)}
+            >
+              <SelectTrigger className="hover-lift focus-ring">
+                <SelectValue placeholder="Select icon style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="outline">Outline</SelectItem>
+                <SelectItem value="solid">Solid</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

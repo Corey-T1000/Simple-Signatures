@@ -16,27 +16,31 @@ function hexToHSL(hex: string): { h: number; s: number; l: number } {
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
   let h = 0;
   let s = 0;
-  const l = (max + min) / 2;
 
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
     switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
+      case r: {
+        const segment = (g - b) / d;
+        const shift = g < b ? 6 : 0;
+        h = segment + shift;
         break;
-      case g:
+      }
+      case g: {
         h = (b - r) / d + 2;
         break;
-      case b:
+      }
+      case b: {
         h = (r - g) / d + 4;
         break;
+      }
     }
-
-    h /= 6;
+    h = h / 6;
   }
 
   return {
@@ -97,8 +101,8 @@ export function generateDarkModeColor(color: string): string {
   const backgroundLuminance = getLuminance(18, 18, 18); // #121212 dark mode background
 
   // Start with the original color's hue and saturation
-  let { h, s } = hsl;
-  let l = hsl.l;
+  const { h } = hsl;
+  let { s, l } = hsl;
 
   // For dark mode, we want to increase lightness while maintaining contrast
   if (l < 50) {

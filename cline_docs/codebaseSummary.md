@@ -9,6 +9,7 @@
   - Advanced padding controls with sliders
   - Icon customization options
   - Content style options (compact/spacious)
+  - Title/Company layout options (stacked/inline)
   - CTA layout options (stacked/inline)
   - Real-time updates
 - ImportSignature: Handles signature code importing
@@ -21,11 +22,13 @@
   - Live updates
   - Responsive display
   - Template rendering
-  - Dark mode support
+  - Dark mode support with smart color adjustments
   - Theme-based styling
-  - Flexible CTA layouts
-    - Stacked (one per line)
-    - Inline (side by side with separator)
+  - WCAG contrast checking
+  - Non-intrusive color warnings
+  - Flexible layouts
+    - Title/Company (stacked/inline)
+    - CTAs (stacked/inline)
 - SignatureCode: Generates and displays HTML code
   - Code formatting
   - Copy functionality
@@ -46,6 +49,7 @@
 - Card: Container component with consistent styling
 - Checkbox: Toggle component for boolean settings
 - ColorPicker: Custom color selection with preview
+- ColorWarning: Non-intrusive accessibility warnings
 - Input: Enhanced form input component
 - Label: Form label component with proper spacing
 - Select: Dropdown component with search
@@ -61,6 +65,19 @@
 - All components support dark mode
 
 ### Theme System
+- Theme Context: Centralized theme management
+  - Dark/Light mode support
+  - Theme persistence
+  - Type-safe theme values
+- Theme Hook: Custom hook for theme access
+  - Easy theme switching
+  - Theme state management
+  - TypeScript support
+- Color System:
+  - WCAG contrast checking
+  - Smart dark mode adjustments
+  - Color preservation
+  - Accessibility warnings
 - Default Content: Dune-themed placeholder data
   - Character-based example data
   - Thematic styling
@@ -68,9 +85,10 @@
   - Engaging preview
 - Color Schemes:
   - Desert-inspired palette
-  - Dark mode support
+  - Dark mode support with smart adjustments
   - Primary/Secondary color customization
   - Consistent theming
+  - WCAG compliance
 - Typography:
   - Extensive font options
   - Hierarchical text styles
@@ -82,7 +100,7 @@
   - Responsive design
   - Two-column customization interface
   - Flexible padding system
-  - Multiple CTA layouts
+  - Multiple layout options
 
 ### Utils and Services
 - storage.ts: Local storage management
@@ -102,7 +120,14 @@
   - Class name management
   - Theme utilities
   - Type helpers
-- button-variants.ts: Button styling variants
+- theme-context.tsx: Theme management
+  - Context provider
+  - Theme types
+  - Theme utilities
+- use-theme.ts: Theme hook
+  - Theme access
+  - Type-safe theme usage
+  - Error handling
 
 ### Types
 - signature.ts: Contains type definitions
@@ -112,6 +137,7 @@
   - UI component props
   - SignatureElement type for ordering
   - Storage data types
+  - Theme types
 
 ## Project Structure
 ```
@@ -123,6 +149,7 @@ src/
 │   │   ├── card.tsx
 │   │   ├── checkbox.tsx
 │   │   ├── ColorPicker.tsx
+│   │   ├── ColorWarning.tsx
 │   │   ├── dialog.tsx
 │   │   ├── ImageUploader.tsx
 │   │   ├── Input.tsx
@@ -142,6 +169,8 @@ src/
 │   └── SignaturePreview.tsx
 ├── lib/               # Core utilities and services
 │   ├── storage.ts    # Local storage management
+│   ├── theme-context.tsx # Theme provider
+│   ├── use-theme.ts  # Theme hook
 │   └── utils.ts      # Shared utilities
 ├── types/            # TypeScript definitions
 │   └── signature.ts
@@ -157,11 +186,11 @@ src/
 ## Development Status
 
 ### Current Focus
-1. Feature Implementation
-   - Export options
-   - Error handling
-   - Additional themes
-   - Testing infrastructure
+1. Export Functionality
+   - Multiple format support
+   - Download capabilities
+   - Clipboard integration
+   - Format validation
 
 2. Testing Infrastructure
    - Unit tests
@@ -184,11 +213,13 @@ src/
    - Two-column customization interface
    - Local storage for preferences
    - Advanced padding controls
-   - Multiple CTA layouts
+   - Multiple layout options
+   - WCAG contrast checking
+   - Smart dark mode colors
 
 2. UI Components
    - shadcn/ui integration
-   - Dark mode support
+   - Dark mode support with smart adjustments
    - Enhanced controls
    - Improved layout
    - Button variant system
@@ -198,10 +229,12 @@ src/
    - Import dialog
    - Persistent preferences
    - Slider-based controls
-   - CTA layout options
+   - Layout options
+   - Color warnings
+   - Accessibility indicators
 
 3. Customization Options
-   - Font and color settings
+   - Font and color settings with WCAG support
    - Template options
    - Layout controls
    - Element ordering
@@ -212,6 +245,7 @@ src/
    - Image customization
    - Icon settings
    - Content style options
+   - Title/Company layout options
    - CTA layout options
    - Preference persistence
 
@@ -225,6 +259,7 @@ src/
    - Support theming
    - Follow layout patterns
    - Handle persistence
+   - Check accessibility
 
 2. Type System
    - Define interfaces
@@ -233,6 +268,7 @@ src/
    - Validate props
    - Avoid any types
    - Type storage data
+   - Theme types
 
 3. Testing Requirements
    - Write unit tests
@@ -243,6 +279,7 @@ src/
    - Validate themes
    - Test layouts
    - Verify persistence
+   - Check contrast ratios
 
 4. Code Quality
    - Follow ESLint
@@ -252,6 +289,7 @@ src/
    - Separate concerns
    - Theme consistency
    - Type safety
+   - WCAG compliance
 
 5. UI Standards
    - Use shadcn/ui
@@ -262,3 +300,5 @@ src/
    - Maintain theme coherence
    - Use two-column layout where appropriate
    - Persist user preferences
+   - Check color contrast
+   - Show accessibility warnings

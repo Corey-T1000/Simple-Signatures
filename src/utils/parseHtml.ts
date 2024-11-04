@@ -122,11 +122,16 @@ export function parseSignatureHtml(html: string): ParsedSignature | null {
     })();
 
     // Extract data
+    const emailElement = doc.querySelector('a[href^="mailto:"]');
+    const websiteElement = doc.querySelector('a:not([href^="mailto:"]):not([href^="tel:"])');
+
     const data: SignatureData = {
       fullName: nameElement?.textContent?.trim() || '',
       jobTitle: doc.querySelector('[style*="color: #666666"]')?.textContent?.trim() || '',
       company: doc.querySelector('[style*="font-weight: 600"]')?.textContent?.trim() || '',
+      email: emailElement?.textContent?.trim() || '',
       phone: doc.querySelector('a[href^="tel:"]')?.textContent?.trim() || '',
+      website: websiteElement?.getAttribute('href') || '',
       photo: img?.getAttribute('src') || '',
       ctaText: '',
       ctaLink: '',
