@@ -1,16 +1,17 @@
-import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
+import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Card } from './ui/card';
 import { useTheme } from '../lib/use-theme';
 import { ColorWarning } from './ui/ColorWarning';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, CSSProperties } from 'react';
 
 interface SignaturePreviewProps {
   data: SignatureData;
   style: SignatureStyle;
   template: SignatureTemplate;
+  imageSettings?: ImageSettings;
 }
 
-export function SignaturePreview({ data, style, template }: SignaturePreviewProps) {
+export function SignaturePreview({ data, style, template, imageSettings }: SignaturePreviewProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [hasContrastWarning, setHasContrastWarning] = useState(false);
@@ -36,13 +37,11 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
     titleBottom: '2px',
     sectionBottom: '6px',
     itemPadding: '1px 0',
-    imageRight: '12px',
     lineHeight: '1'
   } : {
     titleBottom: '6px',
     sectionBottom: '16px',
     itemPadding: '3px 0',
-    imageRight: '20px',
     lineHeight: '1.4'
   };
 
@@ -85,8 +84,16 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
     return ratio >= minRatio;
   };
 
+  // Generate shadow style
+  const getShadowStyle = () => {
+    if (!imageSettings?.shadow) return '';
+    const { shadowColor, shadowOpacity, shadowBlur, shadowOffsetX, shadowOffsetY } = imageSettings;
+    const rgba = `rgba(${parseInt(shadowColor.slice(1, 3), 16)}, ${parseInt(shadowColor.slice(3, 5), 16)}, ${parseInt(shadowColor.slice(5, 7), 16)}, ${shadowOpacity})`;
+    return `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${rgba}`;
+  };
+
   // Adjust color for dark mode while preserving hue
-  const adjustColorForDarkMode = (color: string): string => {
+  const adjustColorForDarkMode = (color: string, isName: boolean = false): string => {
     if (!isDark) return color;
 
     const rgb = hexToRgb(color);
@@ -119,8 +126,9 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
       h /= 6;
     }
 
-    // Adjust lightness for dark mode while preserving hue and saturation
-    const newL = Math.min(0.9, l * 1.5);
+    // For name color (primary), make it much lighter in dark mode
+    // For other colors (secondary), make them moderately lighter
+    const newL = isName ? 0.9 : Math.min(0.8, l * 1.75);
 
     // Convert back to RGB
     const hue2rgb = (p: number, q: number, t: number) => {
@@ -144,7 +152,7 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
 
   const backgroundColor = isDark ? '#1e293b' : '#ffffff';
   const colors = {
-    primary: adjustColorForDarkMode(style.primaryColor),
+    primary: adjustColorForDarkMode(style.primaryColor, true),
     secondary: adjustColorForDarkMode(style.secondaryColor),
     muted: isDark ? '#94a3b8' : '#666666',
   };
@@ -235,6 +243,109 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
     </>
   );
 
+  const getImageStyle = (): CSSProperties => {
+    const imageStyle: CSSProperties = {
+      objectFit: imageSettings?.objectFit || template.imageFit,
+      boxShadow: getShadowStyle(),
+    };
+
+    if (imageSettings?.shape === 'rounded') {
+      imageStyle.borderRadius = `${imageSettings.cornerRadius}px`;
+    } else if (template.imageStyle === 'rounded') {
+      imageStyle.borderRadius = '9999px';
+    } else {
+      imageStyle.borderRadius = '8px';
+    }
+
+    return imageStyle;
+  };
+
+  const renderCTAs = () => {
+    if (!data.ctaText && !data.additionalCtaText) return null;
+
+    if (template.ctaLayout === 'inline') {
+      return (
+        <tr>
+          <td style={{ padding: spacing.itemPadding }}>
+            {data.ctaText && (
+              <a 
+                href={data.ctaLink} 
+                style={{ 
+                  color: colors.secondary, 
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+              >
+                {data.ctaText}
+              </a>
+            )}
+            {data.ctaText && data.additionalCtaText && (
+              <span style={{ 
+                color: colors.muted,
+                padding: '0 8px'
+              }}>
+                •
+              </span>
+            )}
+            {data.additionalCtaText && (
+              <a 
+                href={data.additionalCtaLink} 
+                style={{ 
+                  color: colors.secondary, 
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+              >
+                {data.additionalCtaText}
+              </a>
+            )}
+          </td>
+        </tr>
+      );
+    }
+
+    return (
+      <>
+        {data.ctaText && (
+          <tr>
+            <td style={{ padding: spacing.itemPadding }}>
+              <a 
+                href={data.ctaLink} 
+                style={{ 
+                  color: colors.secondary, 
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+              >
+                {data.ctaText}
+              </a>
+            </td>
+          </tr>
+        )}
+        {data.additionalCtaText && (
+          <tr>
+            <td style={{ padding: spacing.itemPadding }}>
+              <a 
+                href={data.additionalCtaLink} 
+                style={{ 
+                  color: colors.secondary, 
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+              >
+                {data.additionalCtaText}
+              </a>
+            </td>
+          </tr>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="space-y-2 animate-in scale-in">
       <Card className="overflow-hidden shadow-lg transition-shadow duration-200 hover:shadow-xl">
@@ -249,7 +360,7 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
               <tr>
                 <td style={{
                   verticalAlign: 'top',
-                  textAlign: template.layout === 'vertical' ? 'center' : 'left',
+                  textAlign: 'left',
                   padding: `${template.padding.top}px ${template.padding.right}px ${template.padding.bottom}px ${template.padding.left}px`
                 }}>
                   <table cellPadding="0" cellSpacing="0" border={0} style={{
@@ -260,7 +371,7 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                       <tr>
                         {template.layout === 'horizontal' && data.photo && (
                           <td style={{
-                            padding: `0 ${spacing.imageRight} 0 0`,
+                            padding: `0 ${template.imageSpacing}px 0 0`,
                             verticalAlign: 'top'
                           }}>
                             <img
@@ -268,11 +379,7 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                               alt={data.fullName}
                               width={100 * template.imageScale}
                               height={100 * template.imageScale}
-                              style={{
-                                borderRadius: template.imageStyle === 'rounded' ? '9999px' : '8px',
-                                objectFit: style.imageFit as 'cover' | 'contain' | 'fill',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-                              }}
+                              style={getImageStyle()}
                             />
                           </td>
                         )}
@@ -280,22 +387,21 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                           {template.layout === 'vertical' && data.photo && (
                             <div style={{ 
                               textAlign: 'center',
-                              paddingBottom: spacing.sectionBottom
+                              paddingBottom: template.imageSpacing,
+                              width: '100%'
                             }}>
                               <img
                                 src={data.photo}
                                 alt={data.fullName}
                                 width={100 * template.imageScale}
                                 height={100 * template.imageScale}
-                                style={{
-                                  borderRadius: template.imageStyle === 'rounded' ? '9999px' : '8px',
-                                  objectFit: style.imageFit as 'cover' | 'contain' | 'fill',
-                                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-                                }}
+                                style={getImageStyle()}
                               />
                             </div>
                           )}
-                          <table cellPadding="0" cellSpacing="0" border={0}>
+                          <table cellPadding="0" cellSpacing="0" border={0} style={{
+                            textAlign: 'left'
+                          }}>
                             <tbody>
                               {renderTitleSection()}
                               <tr>
@@ -305,13 +411,11 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                                       {data.email && (
                                         <tr>
                                           <td style={{ padding: spacing.itemPadding }}>
-                                            {template.showIcons && (
-                                              <img
-                                                src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('email'))}`}
-                                                alt=""
-                                                style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
-                                              />
-                                            )}
+                                            <img
+                                              src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('email'))}`}
+                                              alt=""
+                                              style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
+                                            />
                                             <a 
                                               href={`mailto:${data.email}`} 
                                               style={{ 
@@ -329,13 +433,11 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                                       {data.phone && (
                                         <tr>
                                           <td style={{ padding: spacing.itemPadding }}>
-                                            {template.showIcons && (
-                                              <img
-                                                src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('phone'))}`}
-                                                alt=""
-                                                style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
-                                              />
-                                            )}
+                                            <img
+                                              src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('phone'))}`}
+                                              alt=""
+                                              style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
+                                            />
                                             <a 
                                               href={`tel:${data.phone}`} 
                                               style={{ 
@@ -353,13 +455,11 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                                       {data.website && (
                                         <tr>
                                           <td style={{ padding: spacing.itemPadding }}>
-                                            {template.showIcons && (
-                                              <img
-                                                src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('website'))}`}
-                                                alt=""
-                                                style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
-                                              />
-                                            )}
+                                            <img
+                                              src={`data:image/svg+xml,${encodeURIComponent(generateSvgIcon('website'))}`}
+                                              alt=""
+                                              style={{ width: '14px', height: '14px', marginRight: '8px', verticalAlign: 'middle' }}
+                                            />
                                             <a 
                                               href={data.website} 
                                               style={{ 
@@ -374,6 +474,7 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
                                           </td>
                                         </tr>
                                       )}
+                                      {renderCTAs()}
                                     </tbody>
                                   </table>
                                 </td>

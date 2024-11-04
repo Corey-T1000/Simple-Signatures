@@ -26,11 +26,11 @@ export interface SignatureTemplate {
   contentStyle: 'compact' | 'spacious';
   titleLayout: 'stacked' | 'inline';
   ctaLayout: 'stacked' | 'inline';
-  showIcons: boolean;
   iconStyle: 'outline' | 'solid';
   imageAlignment: 'start' | 'center' | 'end';
   imageScale: number;
   imageFit: 'cover' | 'contain' | 'fill';
+  imageSpacing: number;
   padding: {
     top: number;
     right: number;
@@ -42,13 +42,16 @@ export interface SignatureTemplate {
 export interface ImageSettings {
   width: number;
   height: number;
-  rotation: number;
-  zoom: number;
   objectFit: 'cover' | 'contain' | 'fill';
-  backgroundColor: string;
-  backgroundOpacity: number;
-  backgroundBlur: number;
   lockAspectRatio: boolean;
+  shadow: boolean;
+  shadowColor: string;
+  shadowOpacity: number;
+  shadowBlur: number;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shape: 'rounded' | 'square';
+  cornerRadius: number;
 }
 
 export interface SignatureElement {

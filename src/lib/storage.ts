@@ -1,10 +1,11 @@
-import { SignatureStyle, SignatureTemplate, SignatureData } from '../types/signature';
+import { SignatureStyle, SignatureTemplate, SignatureData, ImageSettings } from '../types/signature';
 
 export interface StorageData {
   theme?: 'light' | 'dark';
   style?: SignatureStyle;
   template?: SignatureTemplate;
   data?: SignatureData;
+  imageSettings?: ImageSettings;
 }
 
 const STORAGE_KEY = 'signature-preferences';

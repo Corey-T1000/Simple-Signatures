@@ -10,6 +10,10 @@
 - [x] Implement combined customization interface
 - [x] Add advanced padding controls
 - [x] Enhance image customization options
+  - [x] Add shadow controls
+  - [x] Add shape customization
+  - [x] Add corner radius adjustment
+  - [x] Improve size and rotation controls
 - [x] Modernize UI and enhance user experience
   - [x] Update style system
   - [x] Improve layout and spacing
@@ -42,7 +46,11 @@
 - Real-time signature preview
 - HTML code generation
 - Multiple customization options:
-  - Image settings (style, fit, alignment, scale)
+  - Image settings
+    - Shadow effects (toggle, color, opacity, blur, offset)
+    - Shape options (rounded/square)
+    - Corner radius adjustment
+    - Style, fit, alignment, scale
   - Style customization with WCAG contrast checking
   - Template selection
   - Advanced padding controls
@@ -113,6 +121,10 @@
 - [2024] Combined style and template customization interface
 - [2024] Advanced padding controls with sliders
 - [2024] Enhanced image customization options
+  - [2024] Added shadow controls
+  - [2024] Added shape customization
+  - [2024] Added corner radius adjustment
+  - [2024] Improved size and rotation controls
 - [2024] Added content style options
 - [2024] Implemented icon customization
 - [2024] Modernized UI with enhanced design system

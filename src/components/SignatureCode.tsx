@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
+import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Check, Copy } from 'lucide-react';
@@ -9,9 +9,10 @@ interface SignatureCodeProps {
   template: SignatureTemplate;
   data: SignatureData;
   style: SignatureStyle;
+  imageSettings?: ImageSettings;
 }
 
-export function SignatureCode({ template, data, style }: SignatureCodeProps) {
+export function SignatureCode({ template, data, style, imageSettings }: SignatureCodeProps) {
   const [copied, setCopied] = useState(false);
 
   const generateSvgIcon = useCallback((type: string) => {
@@ -30,11 +31,86 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
     }
   }, [template.iconStyle, style.primaryColor]);
 
+  const generateShadowStyle = useCallback(() => {
+    if (!imageSettings?.shadow) return '';
+    const { shadowColor, shadowOpacity, shadowBlur, shadowOffsetX, shadowOffsetY } = imageSettings;
+    const rgba = `rgba(${parseInt(shadowColor.slice(1, 3), 16)}, ${parseInt(shadowColor.slice(3, 5), 16)}, ${parseInt(shadowColor.slice(5, 7), 16)}, ${shadowOpacity})`;
+    return `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${rgba}`;
+  }, [imageSettings]);
+
+  const generateCTAs = useCallback(() => {
+    if (!data.ctaText && !data.additionalCtaText) return '';
+
+    if (template.ctaLayout === 'inline') {
+      return `
+        <tr>
+          <td style="padding: 3px 0;">
+            ${data.ctaText ? `
+              <a href="${data.ctaLink}" style="
+                color: ${style.secondaryColor}; 
+                text-decoration: none;
+                transition: opacity 0.2s ease-in-out;
+              ">
+                ${data.ctaText}
+              </a>
+            ` : ''}
+            ${data.ctaText && data.additionalCtaText ? `
+              <span style="color: #666666; padding: 0 8px;">•</span>
+            ` : ''}
+            ${data.additionalCtaText ? `
+              <a href="${data.additionalCtaLink}" style="
+                color: ${style.secondaryColor}; 
+                text-decoration: none;
+                transition: opacity 0.2s ease-in-out;
+              ">
+                ${data.additionalCtaText}
+              </a>
+            ` : ''}
+          </td>
+        </tr>
+      `;
+    }
+
+    return `
+      ${data.ctaText ? `
+        <tr>
+          <td style="padding: 3px 0;">
+            <a href="${data.ctaLink}" style="
+              color: ${style.secondaryColor}; 
+              text-decoration: none;
+              transition: opacity 0.2s ease-in-out;
+            ">
+              ${data.ctaText}
+            </a>
+          </td>
+        </tr>
+      ` : ''}
+      ${data.additionalCtaText ? `
+        <tr>
+          <td style="padding: 3px 0;">
+            <a href="${data.additionalCtaLink}" style="
+              color: ${style.secondaryColor}; 
+              text-decoration: none;
+              transition: opacity 0.2s ease-in-out;
+            ">
+              ${data.additionalCtaText}
+            </a>
+          </td>
+        </tr>
+      ` : ''}
+    `;
+  }, [data.ctaText, data.ctaLink, data.additionalCtaText, data.additionalCtaLink, template.ctaLayout, style.secondaryColor]);
+
   const generateHtml = useCallback(() => {
     const isVertical = template.layout === 'vertical';
-    const imageClass = template.imageStyle === 'rounded' ? 'border-radius: 50%;' : 'border-radius: 8px;';
-    const spacing = template.contentStyle === 'spacious' ? '20px' : '12px';
     const imageSize = 100 * template.imageScale;
+
+    let borderRadius = '8px';
+    if (imageSettings?.shape === 'rounded') {
+      borderRadius = `${imageSettings.cornerRadius}px`;
+    } else if (template.imageStyle === 'rounded') {
+      borderRadius = '50%';
+    }
 
     const html = `
       <table cellpadding="0" cellspacing="0" border="0" style="
@@ -50,24 +126,38 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
               isVertical ? '' : 'display: inline-block; vertical-align: top;'
             }">
               <tr>
-                <td style="padding-${isVertical ? 'bottom' : 'right'}: ${spacing};">
-                  ${data.photo ? `
+                ${template.layout === 'horizontal' && data.photo ? `
+                  <td style="padding: 0 ${template.imageSpacing}px 0 0; vertical-align: top;">
                     <img 
                       src="${data.photo}" 
                       alt="${data.fullName}"
                       width="${imageSize}"
                       height="${imageSize}"
                       style="
-                        ${imageClass}
-                        object-fit: ${template.imageFit};
-                        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+                        border-radius: ${borderRadius};
+                        object-fit: ${imageSettings?.objectFit || template.imageFit};
+                        box-shadow: ${generateShadowStyle() || '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'};
                       "
                     />
-                  ` : ''}
-                </td>
-                ${isVertical ? '</tr><tr>' : ''}
+                  </td>
+                ` : ''}
                 <td style="vertical-align: top;">
-                  <table cellpadding="0" cellspacing="0" border="0">
+                  ${template.layout === 'vertical' && data.photo ? `
+                    <div style="text-align: center; padding-bottom: ${template.imageSpacing}px; width: 100%;">
+                      <img 
+                        src="${data.photo}" 
+                        alt="${data.fullName}"
+                        width="${imageSize}"
+                        height="${imageSize}"
+                        style="
+                          border-radius: ${borderRadius};
+                          object-fit: ${imageSettings?.objectFit || template.imageFit};
+                          box-shadow: ${generateShadowStyle() || '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)'};
+                        "
+                      />
+                    </div>
+                  ` : ''}
+                  <table cellpadding="0" cellspacing="0" border="0" style="text-align: left;">
                     <tr>
                       <td style="
                         font-size: 20px;
@@ -88,7 +178,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                     ` : ''}
                     ${data.company ? `
                       <tr>
-                        <td style="font-weight: 600; padding-bottom: ${spacing};">
+                        <td style="font-weight: 600; padding-bottom: ${template.contentStyle === 'spacious' ? '20px' : '12px'};">
                           ${data.company}
                         </td>
                       </tr>
@@ -99,11 +189,9 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                           ${data.email ? `
                             <tr>
                               <td style="padding: 3px 0;">
-                                ${template.showIcons ? `
-                                  <img src="data:image/svg+xml,${encodeURIComponent(
-                                    generateSvgIcon('email')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
-                                ` : ''}
+                                <img src="data:image/svg+xml,${encodeURIComponent(
+                                  generateSvgIcon('email')
+                                )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 <a href="mailto:${data.email}" style="
                                   color: ${style.secondaryColor}; 
                                   text-decoration: none;
@@ -117,11 +205,9 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                           ${data.phone ? `
                             <tr>
                               <td style="padding: 3px 0;">
-                                ${template.showIcons ? `
-                                  <img src="data:image/svg+xml,${encodeURIComponent(
-                                    generateSvgIcon('phone')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
-                                ` : ''}
+                                <img src="data:image/svg+xml,${encodeURIComponent(
+                                  generateSvgIcon('phone')
+                                )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 <a href="tel:${data.phone}" style="
                                   color: ${style.secondaryColor}; 
                                   text-decoration: none;
@@ -135,11 +221,9 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                           ${data.website ? `
                             <tr>
                               <td style="padding: 3px 0;">
-                                ${template.showIcons ? `
-                                  <img src="data:image/svg+xml,${encodeURIComponent(
-                                    generateSvgIcon('website')
-                                  )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
-                                ` : ''}
+                                <img src="data:image/svg+xml,${encodeURIComponent(
+                                  generateSvgIcon('website')
+                                )}" alt="" style="width: 14px; height: 14px; margin-right: 8px; vertical-align: middle;" />
                                 <a href="${data.website}" style="
                                   color: ${style.secondaryColor}; 
                                   text-decoration: none;
@@ -150,32 +234,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
                               </td>
                             </tr>
                           ` : ''}
-                          ${data.ctaText ? `
-                            <tr>
-                              <td style="padding: 3px 0;">
-                                <a href="${data.ctaLink}" style="
-                                  color: ${style.secondaryColor}; 
-                                  text-decoration: none;
-                                  transition: opacity 0.2s ease-in-out;
-                                ">
-                                  ${data.ctaText}
-                                </a>
-                              </td>
-                            </tr>
-                          ` : ''}
-                          ${data.additionalCtaText ? `
-                            <tr>
-                              <td style="padding: 3px 0;">
-                                <a href="${data.additionalCtaLink}" style="
-                                  color: ${style.secondaryColor}; 
-                                  text-decoration: none;
-                                  transition: opacity 0.2s ease-in-out;
-                                ">
-                                  ${data.additionalCtaText}
-                                </a>
-                              </td>
-                            </tr>
-                          ` : ''}
+                          ${generateCTAs()}
                         </table>
                       </td>
                     </tr>
@@ -190,7 +249,7 @@ export function SignatureCode({ template, data, style }: SignatureCodeProps) {
     `.trim();
 
     return html;
-  }, [template, data, style, generateSvgIcon]);
+  }, [template, data, style, generateSvgIcon, imageSettings, generateShadowStyle, generateCTAs]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(generateHtml());

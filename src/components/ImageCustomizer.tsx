@@ -1,20 +1,17 @@
 import { ImageSettings } from '../types/signature';
-import { Lock, Unlock } from 'lucide-react';
 import { ColorPicker } from './ui/ColorPicker';
-import { Slider } from './ui/Slider';
-import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { cn } from '../lib/utils';
+import { Switch } from './ui/switch';
+import { Card, CardContent } from './ui/card';
+import { NumericSlider } from './ui/NumericSlider';
 
 interface ImageCustomizerProps {
   settings: ImageSettings;
   onChange: (settings: ImageSettings) => void;
-  imageUrl?: string;
 }
 
-export function ImageCustomizer({ settings, onChange, imageUrl }: ImageCustomizerProps) {
+export function ImageCustomizer({ settings, onChange }: ImageCustomizerProps) {
   const handleChange = (field: keyof ImageSettings) => (
     value: number | string | boolean
   ) => {
@@ -35,139 +32,117 @@ export function ImageCustomizer({ settings, onChange, imageUrl }: ImageCustomize
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle>Image Settings</CardTitle>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleChange('lockAspectRatio')(!settings.lockAspectRatio)}
-          title={settings.lockAspectRatio ? 'Unlock aspect ratio' : 'Lock aspect ratio'}
-        >
-          {settings.lockAspectRatio ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-        </Button>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pt-6">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Width</Label>
-            <Slider
+            <NumericSlider
+              label="Width"
               min={40}
               max={200}
               step={1}
-              value={[settings.width]}
-              onValueChange={([value]) => handleChange('width')(value)}
+              value={settings.width}
+              onChange={handleChange('width')}
             />
           </div>
           
           <div className="space-y-2">
-            <Label>Height</Label>
-            <Slider
+            <NumericSlider
+              label="Height"
               min={40}
               max={200}
               step={1}
-              value={[settings.height]}
-              onValueChange={([value]) => handleChange('height')(value)}
+              value={settings.height}
+              onChange={handleChange('height')}
             />
           </div>
         </div>
 
         <div className="space-y-4">
+          {/* Shape Controls */}
           <div className="space-y-2">
-            <Label>Rotation</Label>
-            <Slider
-              min={-180}
-              max={180}
-              step={1}
-              value={[settings.rotation]}
-              onValueChange={([value]) => handleChange('rotation')(value)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Zoom</Label>
-            <Slider
-              min={100}
-              max={200}
-              step={10}
-              value={[settings.zoom * 100]}
-              onValueChange={([value]) => handleChange('zoom')(value / 100)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Object Fit</Label>
+            <Label>Shape</Label>
             <Select 
-              value={settings.objectFit} 
-              onValueChange={(value) => handleChange('objectFit')(value)}
+              value={settings.shape} 
+              onValueChange={(value: 'rounded' | 'square') => handleChange('shape')(value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select object fit" />
+                <SelectValue placeholder="Select shape" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="contain">Contain</SelectItem>
-                <SelectItem value="cover">Cover</SelectItem>
-                <SelectItem value="fill">Fill</SelectItem>
+                <SelectItem value="rounded">Rounded</SelectItem>
+                <SelectItem value="square">Square</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label>Background Color</Label>
-            <ColorPicker
-              color={settings.backgroundColor}
-              onChange={(color) => handleChange('backgroundColor')(color)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Background Opacity</Label>
-            <Slider
+          {settings.shape === 'rounded' && (
+            <NumericSlider
+              label="Corner Radius"
               min={0}
-              max={100}
-              step={10}
-              value={[settings.backgroundOpacity * 100]}
-              onValueChange={([value]) => handleChange('backgroundOpacity')(value / 100)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Background Blur</Label>
-            <Slider
-              min={0}
-              max={20}
+              max={50}
               step={1}
-              value={[settings.backgroundBlur]}
-              onValueChange={([value]) => handleChange('backgroundBlur')(value)}
+              value={settings.cornerRadius}
+              onChange={handleChange('cornerRadius')}
+            />
+          )}
+
+          {/* Shadow Controls */}
+          <div className="flex items-center justify-between">
+            <Label>Shadow</Label>
+            <Switch
+              checked={settings.shadow}
+              onCheckedChange={(checked) => handleChange('shadow')(checked)}
             />
           </div>
-        </div>
 
-        {imageUrl && (
-          <div className={cn(
-            "mt-4 rounded-lg overflow-hidden",
-            "border border-border"
-          )}>
-            <div
-              className="relative w-full h-40 bg-muted"
-              style={{
-                backgroundColor: settings.backgroundColor,
-                opacity: settings.backgroundOpacity,
-              }}
-            >
-              <img
-                src={imageUrl}
-                alt="Preview"
-                className="absolute inset-0 w-full h-full"
-                style={{
-                  objectFit: settings.objectFit,
-                  transform: `rotate(${settings.rotation}deg) scale(${settings.zoom})`,
-                  filter: `blur(${settings.backgroundBlur}px)`,
-                }}
+          {settings.shadow && (
+            <>
+              <div className="space-y-2">
+                <Label>Shadow Color</Label>
+                <ColorPicker
+                  color={settings.shadowColor}
+                  onChange={(color) => handleChange('shadowColor')(color)}
+                />
+              </div>
+
+              <NumericSlider
+                label="Shadow Opacity"
+                min={0}
+                max={100}
+                step={1}
+                value={settings.shadowOpacity * 100}
+                onChange={(value) => handleChange('shadowOpacity')(value / 100)}
               />
-            </div>
-          </div>
-        )}
+
+              <NumericSlider
+                label="Shadow Blur"
+                min={0}
+                max={50}
+                step={1}
+                value={settings.shadowBlur}
+                onChange={handleChange('shadowBlur')}
+              />
+
+              <NumericSlider
+                label="Shadow Offset X"
+                min={-50}
+                max={50}
+                step={1}
+                value={settings.shadowOffsetX}
+                onChange={handleChange('shadowOffsetX')}
+              />
+
+              <NumericSlider
+                label="Shadow Offset Y"
+                min={-50}
+                max={50}
+                step={1}
+                value={settings.shadowOffsetY}
+                onChange={handleChange('shadowOffsetY')}
+              />
+            </>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

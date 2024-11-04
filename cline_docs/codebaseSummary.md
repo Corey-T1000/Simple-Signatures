@@ -12,6 +12,15 @@
   - Title/Company layout options (stacked/inline)
   - CTA layout options (stacked/inline)
   - Real-time updates
+- ImageCustomizer: Enhanced image customization
+  - Shadow controls (toggle, color, opacity, blur, offset)
+  - Shape controls (rounded/square)
+  - Corner radius adjustment
+  - Size and aspect ratio controls
+  - Rotation and zoom
+  - Object fit options
+  - Background settings
+  - Real-time preview
 - ImportSignature: Handles signature code importing
   - HTML code parsing
   - Error handling
@@ -26,6 +35,9 @@
   - Theme-based styling
   - WCAG contrast checking
   - Non-intrusive color warnings
+  - Enhanced image styling
+  - Shadow rendering
+  - Shape customization
   - Flexible layouts
     - Title/Company (stacked/inline)
     - CTAs (stacked/inline)
@@ -35,6 +47,8 @@
   - Preview integration
   - Enhanced display
   - Import/Export support
+  - Image style generation
+  - Shadow CSS generation
 - SignatureElementsOrder: Drag-and-drop element ordering
   - Element visibility toggles
   - Order customization
@@ -108,6 +122,7 @@
   - Theme settings
   - Signature customizations
   - Layout preferences
+  - Image settings storage
   - Error handling
   - Type-safe storage operations
 - parseHtml.ts: HTML signature parser
@@ -138,6 +153,7 @@
   - SignatureElement type for ordering
   - Storage data types
   - Theme types
+  - Image settings types
 
 ## Project Structure
 ```
@@ -206,6 +222,10 @@ src/
    - Real-time preview
    - HTML generation
    - Image upload with drag-and-drop
+   - Enhanced image customization
+     - Shadow controls
+     - Shape customization
+     - Corner radius adjustment
    - Error boundary implementation
    - Element ordering system
    - Theme-based content
@@ -243,6 +263,10 @@ src/
    - Import/Export options
    - Advanced padding controls
    - Image customization
+     - Shadow effects
+     - Shape options
+     - Corner radius
+     - Size and rotation
    - Icon settings
    - Content style options
    - Title/Company layout options

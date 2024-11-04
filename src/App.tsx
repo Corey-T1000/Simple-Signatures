@@ -5,7 +5,8 @@ import { ImportSignature } from './components/ImportSignature';
 import { LayoutCustomizer } from './components/LayoutCustomizer';
 import { SpacingCustomizer } from './components/SpacingCustomizer';
 import { StyleCustomizer } from './components/StyleCustomizer';
-import { SignatureData, SignatureStyle, SignatureTemplate } from './types/signature';
+import { ImageCustomizer } from './components/ImageCustomizer';
+import { SignatureData, SignatureStyle, SignatureTemplate, ImageSettings } from './types/signature';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { MoonIcon, SunIcon } from "lucide-react";
@@ -44,11 +45,11 @@ const defaultTemplate: SignatureTemplate = {
   contentStyle: 'compact',
   titleLayout: 'stacked',
   ctaLayout: 'stacked',
-  showIcons: false,
   iconStyle: 'outline',
   imageAlignment: 'start',
   imageScale: 0.7,
   imageFit: 'cover',
+  imageSpacing: 16,
   padding: {
     top: 12,
     right: 0,
@@ -57,10 +58,26 @@ const defaultTemplate: SignatureTemplate = {
   }
 };
 
+const defaultImageSettings: ImageSettings = {
+  width: 100,
+  height: 100,
+  objectFit: 'cover',
+  lockAspectRatio: true,
+  shadow: false,
+  shadowColor: '#000000',
+  shadowOpacity: 0.2,
+  shadowBlur: 10,
+  shadowOffsetX: 0,
+  shadowOffsetY: 4,
+  shape: 'rounded',
+  cornerRadius: 8
+};
+
 function App() {
   const [data, setData] = useState<SignatureData>(defaultData);
   const [style, setStyle] = useState<SignatureStyle>(defaultStyle);
   const [template, setTemplate] = useState<SignatureTemplate>(defaultTemplate);
+  const [imageSettings, setImageSettings] = useState<ImageSettings>(defaultImageSettings);
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
@@ -69,6 +86,7 @@ function App() {
     if (savedData.style) setStyle(savedData.style);
     if (savedData.template) setTemplate(savedData.template);
     if (savedData.data) setData(savedData.data);
+    if (savedData.imageSettings) setImageSettings(savedData.imageSettings);
     
     if (savedData.theme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -101,6 +119,11 @@ function App() {
   const handleTemplateChange = (newTemplate: SignatureTemplate) => {
     setTemplate(newTemplate);
     saveToStorage({ template: newTemplate });
+  };
+
+  const handleImageSettingsChange = (newSettings: ImageSettings) => {
+    setImageSettings(newSettings);
+    saveToStorage({ imageSettings: newSettings });
   };
 
   const handleImport = (
@@ -144,6 +167,7 @@ function App() {
               data={data}
               style={style}
               template={template}
+              imageSettings={imageSettings}
             />
           </div>
         </div>
@@ -286,12 +310,26 @@ function App() {
             </TabsContent>
 
             <TabsContent value="style">
-              <StyleCustomizer
-                style={style}
-                template={template}
-                onStyleChange={handleStyleChange}
-                onTemplateChange={handleTemplateChange}
-              />
+              <div className="grid gap-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Image Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ImageCustomizer
+                      settings={imageSettings}
+                      onChange={handleImageSettingsChange}
+                    />
+                  </CardContent>
+                </Card>
+
+                <StyleCustomizer
+                  style={style}
+                  template={template}
+                  onStyleChange={handleStyleChange}
+                  onTemplateChange={handleTemplateChange}
+                />
+              </div>
             </TabsContent>
 
             <TabsContent value="output">
@@ -306,6 +344,7 @@ function App() {
                     data={data}
                     style={style}
                     template={template}
+                    imageSettings={imageSettings}
                   />
                 </TabsContent>
 
