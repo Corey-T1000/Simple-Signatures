@@ -115,6 +115,19 @@ export function SignatureCustomizer({ style, template, onStyleChange, onTemplate
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>CTA Layout</Label>
+              <Select value={template.ctaLayout} onValueChange={(value) => handleTemplateChange('ctaLayout', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select CTA layout" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="stacked">Stacked (One per line)</SelectItem>
+                  <SelectItem value="inline">Inline (Side by side)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Right Column */}

@@ -1,6 +1,6 @@
 import { SignatureTemplate, SignatureData, SignatureStyle } from '../types/signature';
-import { Mail, Phone, Globe, Linkedin, Twitter } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn, generateDarkModeColor } from '../lib/utils';
+import { useEffect, useState } from 'react';
 
 interface SignaturePreviewProps {
   data: SignatureData;
@@ -9,38 +9,17 @@ interface SignaturePreviewProps {
 }
 
 export function SignaturePreview({ data, style, template }: SignaturePreviewProps) {
-  const iconSize = 16;
-  const iconColor = style.primaryColor;
+  const [darkModePrimaryColor, setDarkModePrimaryColor] = useState(style.primaryColor);
+  const [darkModeSecondaryColor, setDarkModeSecondaryColor] = useState(style.secondaryColor);
 
-  const getIcon = (type: string) => {
-    if (!template.showIcons) return null;
-    
-    const iconProps = {
-      size: iconSize,
-      color: iconColor,
-      className: "shrink-0 mr-2",
-      fill: template.iconStyle === 'solid' ? iconColor : 'none'
-    };
-    
-    switch (type) {
-      case 'email':
-        return <Mail {...iconProps} />;
-      case 'phone':
-        return <Phone {...iconProps} />;
-      case 'website':
-        return <Globe {...iconProps} />;
-      case 'linkedin':
-        return <Linkedin {...iconProps} />;
-      case 'twitter':
-        return <Twitter {...iconProps} />;
-      default:
-        return null;
-    }
-  };
+  useEffect(() => {
+    setDarkModePrimaryColor(generateDarkModeColor(style.primaryColor));
+    setDarkModeSecondaryColor(generateDarkModeColor(style.secondaryColor));
+  }, [style.primaryColor, style.secondaryColor]);
 
   const containerClass = template.layout === 'horizontal' 
-    ? 'flex items-start gap-6' 
-    : 'flex flex-col gap-4';
+    ? 'flex items-start gap-3' 
+    : 'flex flex-col gap-2';
 
   const imageAlignmentClass = {
     start: 'self-start',
@@ -50,6 +29,50 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
 
   const { top, right, bottom, left } = template.padding;
   const imageSize = 100 * template.imageScale;
+
+  const renderCTA = (text: string, link: string) => (
+    <a 
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        "hover:underline truncate text-sm transition-colors",
+        "text-primary dark:text-primary"
+      )}
+      style={{ 
+        '--cta-color': style.secondaryColor,
+        '--cta-color-dark': darkModeSecondaryColor,
+        color: `var(--cta-color)`,
+      } as React.CSSProperties}
+    >
+      {text}
+    </a>
+  );
+
+  const renderCTAs = () => {
+    const hasPrimaryCTA = data.ctaText && data.ctaLink;
+    const hasAdditionalCTA = data.additionalCtaText && data.additionalCtaLink;
+    const hasBothCTAs = hasPrimaryCTA && hasAdditionalCTA;
+    
+    if (!hasPrimaryCTA && !hasAdditionalCTA) return null;
+    
+    if (hasBothCTAs && template.ctaLayout === 'inline') {
+      return (
+        <div className="flex items-center gap-3">
+          {renderCTA(data.ctaText, data.ctaLink)}
+          <span className="text-muted-foreground">•</span>
+          {renderCTA(data.additionalCtaText, data.additionalCtaLink)}
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-1">
+        {hasPrimaryCTA && renderCTA(data.ctaText, data.ctaLink)}
+        {hasAdditionalCTA && renderCTA(data.additionalCtaText, data.additionalCtaLink)}
+      </div>
+    );
+  };
 
   return (
     <div 
@@ -84,92 +107,42 @@ export function SignaturePreview({ data, style, template }: SignaturePreviewProp
           </div>
         )}
         
-        <div className="flex flex-col gap-2 min-w-0">
-          <div>
-            <h2 
-              className="text-xl font-bold leading-none mb-1"
-              style={{ color: style.primaryColor }}
-            >
-              {data.fullName}
-            </h2>
-            <p className="text-muted-foreground leading-snug">{data.jobTitle}</p>
-            <p className="font-semibold text-card-foreground">{data.company}</p>
-          </div>
-
-          <div className={cn(
-            "flex flex-col gap-1.5 text-sm",
-            template.contentStyle === 'spacious' ? 'mt-4' : 'mt-2'
-          )}>
-            {data.email && (
-              <div className="flex items-center">
-                {getIcon('email')}
-                <a 
-                  href={`mailto:${data.email}`}
-                  className="hover:underline truncate"
-                  style={{ color: style.secondaryColor }}
-                >
-                  {data.email}
-                </a>
-              </div>
+        <div className="flex flex-col min-w-0">
+          <div className="flex flex-col gap-1">
+            {data.fullName && (
+              <h2 
+                className={cn(
+                  "text-md font-bold leading-none transition-colors",
+                  "text-foreground dark:text-foreground"
+                )}
+                style={{ 
+                  '--name-color': style.primaryColor,
+                  '--name-color-dark': darkModePrimaryColor,
+                  color: `var(--name-color)`,
+                } as React.CSSProperties}
+              >
+                {data.fullName}
+              </h2>
             )}
-            
+            {data.jobTitle && (
+              <p className="text-muted-foreground leading-none text-sm">
+                {data.jobTitle}
+              </p>
+            )}
+            {data.company && (
+              <p className="font-medium leading-none text-card-foreground text-sm">
+                {data.company}
+              </p>
+            )}
             {data.phone && (
-              <div className="flex items-center">
-                {getIcon('phone')}
-                <a 
-                  href={`tel:${data.phone}`}
-                  className="hover:underline truncate"
-                  style={{ color: style.secondaryColor }}
-                >
-                  {data.phone}
-                </a>
-              </div>
+              <a 
+                href={`tel:${data.phone}`}
+                className="hover:underline truncate text-muted-foreground text-sm"
+              >
+                {data.phone}
+              </a>
             )}
-            
-            {data.website && (
-              <div className="flex items-center">
-                {getIcon('website')}
-                <a 
-                  href={data.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline truncate"
-                  style={{ color: style.secondaryColor }}
-                >
-                  {data.website.replace(/^https?:\/\//, '')}
-                </a>
-              </div>
-            )}
-            
-            {data.linkedin && (
-              <div className="flex items-center">
-                {getIcon('linkedin')}
-                <a 
-                  href={data.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                  style={{ color: style.secondaryColor }}
-                >
-                  LinkedIn
-                </a>
-              </div>
-            )}
-            
-            {data.twitter && (
-              <div className="flex items-center">
-                {getIcon('twitter')}
-                <a 
-                  href={data.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                  style={{ color: style.secondaryColor }}
-                >
-                  Twitter
-                </a>
-              </div>
-            )}
+            {renderCTAs()}
           </div>
         </div>
       </div>

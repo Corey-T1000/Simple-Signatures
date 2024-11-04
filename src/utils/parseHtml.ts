@@ -108,18 +108,42 @@ export function parseSignatureHtml(html: string): ParsedSignature | null {
       left: extractPadding(mainCellStyle + ' padding-left: 24px')
     };
 
+    // Detect CTA layout
+    const ctaLayout = (() => {
+      const ctas = Array.from(doc.querySelectorAll('a:not([href^="mailto:"]):not([href^="tel:"])'));
+      if (ctas.length >= 2) {
+        const firstCta = ctas[0];
+        const secondCta = ctas[1];
+        const firstRect = firstCta.getBoundingClientRect();
+        const secondRect = secondCta.getBoundingClientRect();
+        return Math.abs(firstRect.left - secondRect.left) < 5 ? 'stacked' : 'inline';
+      }
+      return 'stacked';
+    })();
+
     // Extract data
     const data: SignatureData = {
       fullName: nameElement?.textContent?.trim() || '',
       jobTitle: doc.querySelector('[style*="color: #666666"]')?.textContent?.trim() || '',
       company: doc.querySelector('[style*="font-weight: 600"]')?.textContent?.trim() || '',
-      email: doc.querySelector('a[href^="mailto:"]')?.textContent?.trim() || '',
       phone: doc.querySelector('a[href^="tel:"]')?.textContent?.trim() || '',
-      website: doc.querySelector('a:not([href^="mailto:"]):not([href^="tel:"])')?.getAttribute('href') || '',
-      linkedin: doc.querySelector('a[href*="linkedin.com"]')?.getAttribute('href') || '',
-      twitter: doc.querySelector('a[href*="twitter.com"]')?.getAttribute('href') || '',
-      photo: img?.getAttribute('src') || ''
+      photo: img?.getAttribute('src') || '',
+      ctaText: '',
+      ctaLink: '',
+      additionalCtaText: '',
+      additionalCtaLink: ''
     };
+
+    // Extract CTAs
+    const ctas = Array.from(doc.querySelectorAll('a:not([href^="mailto:"]):not([href^="tel:"])'));
+    if (ctas.length > 0) {
+      data.ctaText = ctas[0].textContent?.trim() || '';
+      data.ctaLink = ctas[0].getAttribute('href') || '';
+      if (ctas.length > 1) {
+        data.additionalCtaText = ctas[1].textContent?.trim() || '';
+        data.additionalCtaLink = ctas[1].getAttribute('href') || '';
+      }
+    }
 
     return {
       data,
@@ -139,7 +163,8 @@ export function parseSignatureHtml(html: string): ParsedSignature | null {
         imageAlignment,
         imageScale,
         imageFit,
-        padding
+        padding,
+        ctaLayout
       }
     };
   } catch (error) {

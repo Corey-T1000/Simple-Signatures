@@ -49,6 +49,32 @@ export function TemplateCustomizer({ template, onTemplateChange }: TemplateCusto
         </div>
 
         <div className="space-y-2">
+          <Label>Content Style</Label>
+          <Select value={template.contentStyle} onValueChange={(value) => handleChange('contentStyle', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select content style" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="compact">Compact</SelectItem>
+              <SelectItem value="spacious">Spacious</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label>CTA Layout</Label>
+          <Select value={template.ctaLayout} onValueChange={(value) => handleChange('ctaLayout', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select CTA layout" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="stacked">Stacked</SelectItem>
+              <SelectItem value="inline">Inline</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
           <Label>Image Style</Label>
           <Select value={template.imageStyle} onValueChange={(value) => handleChange('imageStyle', value)}>
             <SelectTrigger>
@@ -99,19 +125,6 @@ export function TemplateCustomizer({ template, onTemplateChange }: TemplateCusto
             onValueChange={([value]) => handleChange('imageScale', value / 100)}
             className="pt-2"
           />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Content Style</Label>
-          <Select value={template.contentStyle} onValueChange={(value) => handleChange('contentStyle', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select content style" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="compact">Compact</SelectItem>
-              <SelectItem value="spacious">Spacious</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="flex items-center space-x-2">

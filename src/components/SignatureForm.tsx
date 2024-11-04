@@ -1,4 +1,3 @@
-import React from 'react';
 import { SignatureData, SignatureStyle, SignatureTemplate } from '../types/signature';
 import { TemplateCustomizer } from './TemplateCustomizer';
 import { StyleCustomizer } from './StyleCustomizer';
@@ -39,6 +38,16 @@ export function SignatureForm({
         <CardContent className="space-y-4">
           <div className="grid gap-4">
             <div className="grid gap-2">
+              <Label htmlFor="photo">Photo URL</Label>
+              <Input
+                id="photo"
+                type="url"
+                value={data.photo}
+                onChange={(e) => handleDataChange('photo', e.target.value)}
+              />
+            </div>
+            
+            <div className="grid gap-2">
               <Label htmlFor="fullName">Full Name</Label>
               <Input
                 id="fullName"
@@ -69,16 +78,6 @@ export function SignatureForm({
             </div>
             
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={data.email}
-                onChange={(e) => handleDataChange('email', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
@@ -87,45 +86,47 @@ export function SignatureForm({
                 onChange={(e) => handleDataChange('phone', e.target.value)}
               />
             </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                type="url"
-                value={data.website}
-                onChange={(e) => handleDataChange('website', e.target.value)}
-              />
+
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="ctaText">CTA Text</Label>
+                <Input
+                  id="ctaText"
+                  type="text"
+                  value={data.ctaText}
+                  onChange={(e) => handleDataChange('ctaText', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="ctaLink">CTA Link</Label>
+                <Input
+                  id="ctaLink"
+                  type="url"
+                  value={data.ctaLink}
+                  onChange={(e) => handleDataChange('ctaLink', e.target.value)}
+                />
+              </div>
             </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="linkedin">LinkedIn URL</Label>
-              <Input
-                id="linkedin"
-                type="url"
-                value={data.linkedin}
-                onChange={(e) => handleDataChange('linkedin', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="twitter">Twitter URL</Label>
-              <Input
-                id="twitter"
-                type="url"
-                value={data.twitter}
-                onChange={(e) => handleDataChange('twitter', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="photo">Photo URL</Label>
-              <Input
-                id="photo"
-                type="url"
-                value={data.photo}
-                onChange={(e) => handleDataChange('photo', e.target.value)}
-              />
+
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="additionalCtaText">Additional CTA Text</Label>
+                <Input
+                  id="additionalCtaText"
+                  type="text"
+                  value={data.additionalCtaText}
+                  onChange={(e) => handleDataChange('additionalCtaText', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="additionalCtaLink">Additional CTA Link</Label>
+                <Input
+                  id="additionalCtaLink"
+                  type="url"
+                  value={data.additionalCtaLink}
+                  onChange={(e) => handleDataChange('additionalCtaLink', e.target.value)}
+                />
+              </div>
             </div>
           </div>
         </CardContent>

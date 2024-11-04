@@ -2,12 +2,15 @@
 
 ### Feature Components
 - SignatureCustomizer: Combined style and template customization
-  - Two-column layout
+  - Two-column responsive layout
   - Font and color settings
-  - Layout controls
-  - Image settings
-  - Padding controls
-  - Dark mode support
+  - Layout controls (horizontal/vertical)
+  - Image settings (style, fit, alignment, scale)
+  - Advanced padding controls with sliders
+  - Icon customization options
+  - Content style options (compact/spacious)
+  - CTA layout options (stacked/inline)
+  - Real-time updates
 - ImportSignature: Handles signature code importing
   - HTML code parsing
   - Error handling
@@ -20,6 +23,9 @@
   - Template rendering
   - Dark mode support
   - Theme-based styling
+  - Flexible CTA layouts
+    - Stacked (one per line)
+    - Inline (side by side with separator)
 - SignatureCode: Generates and displays HTML code
   - Code formatting
   - Copy functionality
@@ -37,13 +43,13 @@
 
 ### UI Components (shadcn/ui)
 - Button: Enhanced button component with variants
-- Card: Container component
-- Checkbox: Toggle component
-- ColorPicker: Custom color selection
+- Card: Container component with consistent styling
+- Checkbox: Toggle component for boolean settings
+- ColorPicker: Custom color selection with preview
 - Input: Enhanced form input component
-- Label: Form label component
-- Select: Dropdown component
-- Slider: Range input component
+- Label: Form label component with proper spacing
+- Select: Dropdown component with search
+- Slider: Range input component for numeric values
 - Tabs: Content organization
 - Switch: Toggle switch component
 - Dialog: Modal dialog component
@@ -63,19 +69,29 @@
 - Color Schemes:
   - Desert-inspired palette
   - Dark mode support
-  - Customizable colors
+  - Primary/Secondary color customization
   - Consistent theming
 - Typography:
-  - Theme-appropriate fonts
+  - Extensive font options
   - Hierarchical text styles
   - Readable contrasts
+  - System and web fonts support
 - Layout:
   - Professional spacing
   - Balanced composition
   - Responsive design
-  - Two-column customization
+  - Two-column customization interface
+  - Flexible padding system
+  - Multiple CTA layouts
 
-### Utils
+### Utils and Services
+- storage.ts: Local storage management
+  - User preferences persistence
+  - Theme settings
+  - Signature customizations
+  - Layout preferences
+  - Error handling
+  - Type-safe storage operations
 - parseHtml.ts: HTML signature parser
   - Data extraction
   - Style recognition
@@ -95,6 +111,7 @@
   - Configuration types
   - UI component props
   - SignatureElement type for ordering
+  - Storage data types
 
 ## Project Structure
 ```
@@ -123,16 +140,17 @@ src/
 │   ├── SignatureElementsOrder.tsx
 │   ├── SignatureForm.tsx
 │   └── SignaturePreview.tsx
-├── types/              # TypeScript definitions
+├── lib/               # Core utilities and services
+│   ├── storage.ts    # Local storage management
+│   └── utils.ts      # Shared utilities
+├── types/            # TypeScript definitions
 │   └── signature.ts
-├── utils/              # Utility functions
+├── utils/            # Feature-specific utilities
 │   ├── generateHtml.ts
 │   └── parseHtml.ts
-├── lib/               # Shared utilities
-│   └── utils.ts
-├── styles/            # Theme configuration
+├── styles/           # Theme configuration
 │   └── globals.css
-├── App.tsx           # Main application
+├── App.tsx          # Main application
 └── main.tsx         # Entry point
 ```
 
@@ -140,10 +158,10 @@ src/
 
 ### Current Focus
 1. Feature Implementation
-   - Local storage
    - Export options
    - Error handling
    - Additional themes
+   - Testing infrastructure
 
 2. Testing Infrastructure
    - Unit tests
@@ -154,8 +172,8 @@ src/
 
 ### Implemented Features
 1. Core Functionality
-   - Signature customization
-   - Template system
+   - Combined signature customization interface
+   - Advanced template system
    - Real-time preview
    - HTML generation
    - Image upload with drag-and-drop
@@ -163,7 +181,10 @@ src/
    - Element ordering system
    - Theme-based content
    - HTML signature import
-   - Combined customization interface
+   - Two-column customization interface
+   - Local storage for preferences
+   - Advanced padding controls
+   - Multiple CTA layouts
 
 2. UI Components
    - shadcn/ui integration
@@ -175,6 +196,9 @@ src/
    - Themed defaults
    - Two-column customization
    - Import dialog
+   - Persistent preferences
+   - Slider-based controls
+   - CTA layout options
 
 3. Customization Options
    - Font and color settings
@@ -184,7 +208,12 @@ src/
    - Visibility toggles
    - Theme selection
    - Import/Export options
-   - Padding controls
+   - Advanced padding controls
+   - Image customization
+   - Icon settings
+   - Content style options
+   - CTA layout options
+   - Preference persistence
 
 ### Development Guidelines
 1. Component Creation
@@ -195,6 +224,7 @@ src/
    - Implement error boundaries
    - Support theming
    - Follow layout patterns
+   - Handle persistence
 
 2. Type System
    - Define interfaces
@@ -202,6 +232,7 @@ src/
    - Document types
    - Validate props
    - Avoid any types
+   - Type storage data
 
 3. Testing Requirements
    - Write unit tests
@@ -211,6 +242,7 @@ src/
    - Test error scenarios
    - Validate themes
    - Test layouts
+   - Verify persistence
 
 4. Code Quality
    - Follow ESLint
@@ -219,6 +251,7 @@ src/
    - Handle errors
    - Separate concerns
    - Theme consistency
+   - Type safety
 
 5. UI Standards
    - Use shadcn/ui
@@ -228,3 +261,4 @@ src/
    - Implement proper error states
    - Maintain theme coherence
    - Use two-column layout where appropriate
+   - Persist user preferences

@@ -18,15 +18,13 @@ import { Switch } from './ui/switch';
 import { SignatureElement } from '../types/signature';
 
 const defaultElements: SignatureElement[] = [
+  { id: 'photo', type: 'photo', label: 'Photo', visible: true },
   { id: 'fullName', type: 'fullName', label: 'Full Name', visible: true, required: true },
   { id: 'jobTitle', type: 'jobTitle', label: 'Job Title', visible: true },
   { id: 'company', type: 'company', label: 'Company', visible: true },
-  { id: 'email', type: 'email', label: 'Email', visible: true },
   { id: 'phone', type: 'phone', label: 'Phone', visible: true },
-  { id: 'website', type: 'website', label: 'Website', visible: false },
-  { id: 'linkedin', type: 'linkedin', label: 'LinkedIn', visible: false },
-  { id: 'twitter', type: 'twitter', label: 'Twitter', visible: false },
-  { id: 'photo', type: 'photo', label: 'Photo', visible: true },
+  { id: 'cta', type: 'cta', label: 'Primary CTA', visible: true },
+  { id: 'additionalCta', type: 'additionalCta', label: 'Secondary CTA', visible: true },
   { id: 'divider', type: 'divider', label: 'Divider', visible: true },
 ];
 
