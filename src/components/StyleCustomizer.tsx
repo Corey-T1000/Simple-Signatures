@@ -1,71 +1,63 @@
 import { SignatureStyle } from '../types/signature';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ColorPicker } from './ui/ColorPicker';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 interface StyleCustomizerProps {
   style: SignatureStyle;
   onStyleChange: (style: SignatureStyle) => void;
 }
 
-const FONT_OPTIONS = [
-  { value: 'Arial, sans-serif', label: 'Arial' },
-  { value: 'Helvetica, sans-serif', label: 'Helvetica' },
-  { value: 'Times New Roman, serif', label: 'Times New Roman' },
-  { value: 'Georgia, serif', label: 'Georgia' },
-  { value: 'Verdana, sans-serif', label: 'Verdana' },
-  { value: 'system-ui, sans-serif', label: 'System UI' },
-  { value: 'Roboto, sans-serif', label: 'Roboto' },
-  { value: 'Inter, sans-serif', label: 'Inter' },
-];
-
 export function StyleCustomizer({ style, onStyleChange }: StyleCustomizerProps) {
-  const handleStyleChange = (field: keyof SignatureStyle) => (value: string) => {
-    onStyleChange({ ...style, [field]: value });
+  const handleChange = (field: keyof SignatureStyle) => (value: string) => {
+    onStyleChange({
+      ...style,
+      [field]: value
+    });
   };
 
   return (
-    <Card className="animate-in scale-in shadow-lg">
-      <CardHeader className="space-y-2 pb-4 border-b">
-        <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Style Options
-        </CardTitle>
+    <Card>
+      <CardHeader>
+        <CardTitle>Style Settings</CardTitle>
       </CardHeader>
-      <CardContent className="pt-6 space-y-6">
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Font Family</Label>
-          <Select 
-            value={style.fontFamily} 
-            onValueChange={handleStyleChange('fontFamily')}
-          >
-            <SelectTrigger className="hover-lift focus-ring">
-              <SelectValue placeholder="Select font" />
-            </SelectTrigger>
-            <SelectContent>
-              {FONT_OPTIONS.map(font => (
-                <SelectItem key={font.value} value={font.value}>
-                  {font.label}
+      <CardContent className="space-y-6">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Font Family</Label>
+            <Select 
+              value={style.fontFamily} 
+              onValueChange={handleChange('fontFamily')}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select font family" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Inter, Arial,-apple-system, BlinkMacSystemFont, system-ui, sans-serif">
+                  Inter
                 </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+                <SelectItem value="Arial, sans-serif">Arial</SelectItem>
+                <SelectItem value="Helvetica, Arial, sans-serif">Helvetica</SelectItem>
+                <SelectItem value="Georgia, serif">Georgia</SelectItem>
+                <SelectItem value="'Times New Roman', Times, serif">Times New Roman</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Name Color</Label>
+          <div className="space-y-2">
+            <Label>Primary Color</Label>
             <ColorPicker
               color={style.primaryColor}
-              onChange={handleStyleChange('primaryColor')}
+              onChange={handleChange('primaryColor')}
             />
           </div>
 
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Text Color</Label>
+          <div className="space-y-2">
+            <Label>Secondary Color</Label>
             <ColorPicker
               color={style.secondaryColor}
-              onChange={handleStyleChange('secondaryColor')}
+              onChange={handleChange('secondaryColor')}
             />
           </div>
         </div>

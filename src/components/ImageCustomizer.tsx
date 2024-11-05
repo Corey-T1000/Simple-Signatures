@@ -33,48 +33,7 @@ export function ImageCustomizer({ settings, onChange }: ImageCustomizerProps) {
   return (
     <Card>
       <CardContent className="space-y-6 pt-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <NumericSlider
-              label="Width"
-              min={40}
-              max={200}
-              step={1}
-              value={settings.width}
-              onChange={handleChange('width')}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <NumericSlider
-              label="Height"
-              min={40}
-              max={200}
-              step={1}
-              value={settings.height}
-              onChange={handleChange('height')}
-            />
-          </div>
-        </div>
-
         <div className="space-y-4">
-          {/* Shape Controls */}
-          <div className="space-y-2">
-            <Label>Shape</Label>
-            <Select 
-              value={settings.shape} 
-              onValueChange={(value: 'rounded' | 'square') => handleChange('shape')(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select shape" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rounded">Rounded</SelectItem>
-                <SelectItem value="square">Square</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {settings.shape === 'rounded' && (
             <NumericSlider
               label="Corner Radius"

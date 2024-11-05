@@ -1,7 +1,15 @@
-import { SignatureTemplate } from '../types/signature';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { NumericSlider } from './ui/NumericSlider';
+import { SignatureTemplate } from '../types/signature';
 
 interface LayoutCustomizerProps {
   template: SignatureTemplate;
@@ -9,29 +17,59 @@ interface LayoutCustomizerProps {
 }
 
 export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomizerProps) {
-  const handleChange = (field: keyof SignatureTemplate) => (
-    value: string | number | boolean
-  ) => {
+  const handleLayoutChange = (value: 'horizontal' | 'vertical') => {
     onTemplateChange({
       ...template,
-      [field]: value
+      layout: value
+    });
+  };
+
+  const handleContentStyleChange = (value: 'compact' | 'spacious') => {
+    onTemplateChange({
+      ...template,
+      contentStyle: value
+    });
+  };
+
+  const handleTitleLayoutChange = (value: 'stacked' | 'inline') => {
+    onTemplateChange({
+      ...template,
+      titleLayout: value
+    });
+  };
+
+  const handleCtaLayoutChange = (value: 'stacked' | 'inline') => {
+    onTemplateChange({
+      ...template,
+      ctaLayout: value
+    });
+  };
+
+  const handleImageScaleChange = (value: number) => {
+    onTemplateChange({
+      ...template,
+      imageScale: value
+    });
+  };
+
+  const handleImageSpacingChange = (value: number) => {
+    onTemplateChange({
+      ...template,
+      imageSpacing: value
     });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Layout Settings</CardTitle>
+        <CardTitle>Layout Options</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Layout Direction</Label>
-            <Select 
-              value={template.layout} 
-              onValueChange={(value: 'horizontal' | 'vertical') => handleChange('layout')(value)}
-            >
-              <SelectTrigger>
+            <Select defaultValue={template.layout} onValueChange={handleLayoutChange}>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select layout" />
               </SelectTrigger>
               <SelectContent>
@@ -43,12 +81,9 @@ export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomize
 
           <div className="space-y-2">
             <Label>Content Style</Label>
-            <Select 
-              value={template.contentStyle} 
-              onValueChange={(value: 'compact' | 'spacious') => handleChange('contentStyle')(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select content style" />
+            <Select defaultValue={template.contentStyle} onValueChange={handleContentStyleChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select style" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="compact">Compact</SelectItem>
@@ -59,11 +94,8 @@ export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomize
 
           <div className="space-y-2">
             <Label>Title Layout</Label>
-            <Select 
-              value={template.titleLayout} 
-              onValueChange={(value: 'stacked' | 'inline') => handleChange('titleLayout')(value)}
-            >
-              <SelectTrigger>
+            <Select defaultValue={template.titleLayout} onValueChange={handleTitleLayoutChange}>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select title layout" />
               </SelectTrigger>
               <SelectContent>
@@ -75,11 +107,8 @@ export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomize
 
           <div className="space-y-2">
             <Label>CTA Layout</Label>
-            <Select 
-              value={template.ctaLayout} 
-              onValueChange={(value: 'stacked' | 'inline') => handleChange('ctaLayout')(value)}
-            >
-              <SelectTrigger>
+            <Select defaultValue={template.ctaLayout} onValueChange={handleCtaLayoutChange}>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select CTA layout" />
               </SelectTrigger>
               <SelectContent>
@@ -90,19 +119,29 @@ export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomize
           </div>
 
           <div className="space-y-2">
-            <Label>Icon Style</Label>
-            <Select 
-              value={template.iconStyle} 
-              onValueChange={(value: 'outline' | 'solid') => handleChange('iconStyle')(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select icon style" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="outline">Outline</SelectItem>
-                <SelectItem value="solid">Solid</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label>Image Settings</Label>
+            <div className="pl-4 space-y-4">
+              <NumericSlider
+                label="Size Scale"
+                min={0.5}
+                max={2}
+                step={0.1}
+                value={template.imageScale}
+                onChange={handleImageScaleChange}
+                unit="x"
+                precision={1}
+              />
+
+              <NumericSlider
+                label="Spacing"
+                min={0}
+                max={40}
+                step={4}
+                value={template.imageSpacing}
+                onChange={handleImageSpacingChange}
+                unit="px"
+              />
+            </div>
           </div>
         </div>
       </CardContent>

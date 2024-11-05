@@ -8,21 +8,14 @@ interface SpacingCustomizerProps {
 }
 
 export function SpacingCustomizer({ template, onTemplateChange }: SpacingCustomizerProps) {
-  const handleChange = (field: keyof SignatureTemplate['padding'] | 'imageSpacing') => (value: number) => {
-    if (field === 'imageSpacing') {
-      onTemplateChange({
-        ...template,
-        imageSpacing: value
-      });
-    } else {
-      onTemplateChange({
-        ...template,
-        padding: {
-          ...template.padding,
-          [field]: value
-        }
-      });
-    }
+  const handleChange = (field: keyof SignatureTemplate['padding']) => (value: number) => {
+    onTemplateChange({
+      ...template,
+      padding: {
+        ...template.padding,
+        [field]: value
+      }
+    });
   };
 
   return (
@@ -32,15 +25,6 @@ export function SpacingCustomizer({ template, onTemplateChange }: SpacingCustomi
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-4">
-          <NumericSlider
-            label="Image Spacing"
-            min={0}
-            max={40}
-            step={4}
-            value={template.imageSpacing}
-            onChange={handleChange('imageSpacing')}
-          />
-
           <NumericSlider
             label="Top Padding"
             min={0}

@@ -6,6 +6,7 @@ import { LayoutCustomizer } from './components/LayoutCustomizer';
 import { SpacingCustomizer } from './components/SpacingCustomizer';
 import { StyleCustomizer } from './components/StyleCustomizer';
 import { ImageCustomizer } from './components/ImageCustomizer';
+import { ExportOptions } from './components/ExportOptions';
 import { SignatureData, SignatureStyle, SignatureTemplate, ImageSettings } from './types/signature';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
@@ -333,11 +334,21 @@ function App() {
               <Tabs defaultValue="code" className="space-y-4">
                 <TabsList>
                   <TabsTrigger value="code">HTML Code</TabsTrigger>
-                  <TabsTrigger value="import">Import Signature</TabsTrigger>
+                  <TabsTrigger value="export">Export</TabsTrigger>
+                  <TabsTrigger value="import">Import</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="code">
                   <SignatureCode
+                    data={data}
+                    style={style}
+                    template={template}
+                    imageSettings={imageSettings}
+                  />
+                </TabsContent>
+
+                <TabsContent value="export">
+                  <ExportOptions
                     data={data}
                     style={style}
                     template={template}

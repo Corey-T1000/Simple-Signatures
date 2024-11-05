@@ -10,14 +10,25 @@ interface NumericSliderProps {
   step: number;
   value: number;
   onChange: (value: number) => void;
+  unit?: string;
+  precision?: number;
 }
 
-export function NumericSlider({ label, min, max, step, value, onChange }: NumericSliderProps) {
-  const [inputValue, setInputValue] = useState(value.toString());
+export function NumericSlider({ 
+  label, 
+  min, 
+  max, 
+  step, 
+  value, 
+  onChange,
+  unit = '',
+  precision = 0
+}: NumericSliderProps) {
+  const [inputValue, setInputValue] = useState(value.toFixed(precision));
 
   useEffect(() => {
-    setInputValue(value.toString());
-  }, [value]);
+    setInputValue(value.toFixed(precision));
+  }, [value, precision]);
 
   const handleSliderChange = ([newValue]: number[]) => {
     onChange(newValue);
@@ -36,15 +47,15 @@ export function NumericSlider({ label, min, max, step, value, onChange }: Numeri
   const handleInputBlur = () => {
     const numericValue = parseFloat(inputValue);
     if (isNaN(numericValue) || numericValue < min) {
-      setInputValue(min.toString());
+      setInputValue(min.toFixed(precision));
       onChange(min);
     } else if (numericValue > max) {
-      setInputValue(max.toString());
+      setInputValue(max.toFixed(precision));
       onChange(max);
     } else {
       // Round to nearest step
       const roundedValue = Math.round(numericValue / step) * step;
-      setInputValue(roundedValue.toString());
+      setInputValue(roundedValue.toFixed(precision));
       onChange(roundedValue);
     }
   };
@@ -53,16 +64,19 @@ export function NumericSlider({ label, min, max, step, value, onChange }: Numeri
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label>{label}</Label>
-        <Input
-          type="number"
-          min={min}
-          max={max}
-          step={step}
-          value={inputValue}
-          onChange={handleInputChange}
-          onBlur={handleInputBlur}
-          className="w-20 text-right"
-        />
+        <div className="flex items-center gap-1">
+          <Input
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            className="w-16 text-right"
+          />
+          {unit && <span className="text-sm text-muted-foreground w-6">{unit}</span>}
+        </div>
       </div>
       <Slider
         min={min}
