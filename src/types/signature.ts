@@ -26,7 +26,6 @@ export interface SignatureTemplate {
   contentStyle: 'compact' | 'spacious';
   titleLayout: 'stacked' | 'inline';
   ctaLayout: 'stacked' | 'inline';
-  iconStyle: 'outline' | 'solid';
   imageAlignment: 'start' | 'center' | 'end';
   imageScale: number;
   imageFit: 'cover' | 'contain' | 'fill';

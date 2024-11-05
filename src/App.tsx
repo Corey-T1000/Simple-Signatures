@@ -45,7 +45,6 @@ const defaultTemplate: SignatureTemplate = {
   contentStyle: 'compact',
   titleLayout: 'stacked',
   ctaLayout: 'stacked',
-  iconStyle: 'outline',
   imageAlignment: 'start',
   imageScale: 0.7,
   imageFit: 'cover',
@@ -325,9 +324,7 @@ function App() {
 
                 <StyleCustomizer
                   style={style}
-                  template={template}
                   onStyleChange={handleStyleChange}
-                  onTemplateChange={handleTemplateChange}
                 />
               </div>
             </TabsContent>

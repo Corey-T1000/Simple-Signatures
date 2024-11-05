@@ -55,7 +55,6 @@
   - Template selection
   - Advanced padding controls
   - Content style options
-  - Icon customization
   - Title/Company layout options
 - Form-based signature information input
 - Template customization system
@@ -126,7 +125,6 @@
   - [2024] Added corner radius adjustment
   - [2024] Improved size and rotation controls
 - [2024] Added content style options
-- [2024] Implemented icon customization
 - [2024] Modernized UI with enhanced design system
 - [2024] Added smooth animations and transitions
 - [2024] Implemented micro-interactions

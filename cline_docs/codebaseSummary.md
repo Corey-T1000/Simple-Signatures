@@ -7,7 +7,6 @@
   - Layout controls (horizontal/vertical)
   - Image settings (style, fit, alignment, scale)
   - Advanced padding controls with sliders
-  - Icon customization options
   - Content style options (compact/spacious)
   - Title/Company layout options (stacked/inline)
   - CTA layout options (stacked/inline)
@@ -267,7 +266,6 @@ src/
      - Shape options
      - Corner radius
      - Size and rotation
-   - Icon settings
    - Content style options
    - Title/Company layout options
    - CTA layout options

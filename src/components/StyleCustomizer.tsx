@@ -1,15 +1,12 @@
-import { SignatureStyle, SignatureTemplate } from '../types/signature';
+import { SignatureStyle } from '../types/signature';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ColorPicker } from './ui/ColorPicker';
-import { Checkbox } from './ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
 interface StyleCustomizerProps {
   style: SignatureStyle;
-  template: SignatureTemplate;
   onStyleChange: (style: SignatureStyle) => void;
-  onTemplateChange: (template: SignatureTemplate) => void;
 }
 
 const FONT_OPTIONS = [
@@ -23,16 +20,9 @@ const FONT_OPTIONS = [
   { value: 'Inter, sans-serif', label: 'Inter' },
 ];
 
-export function StyleCustomizer({ style, template, onStyleChange, onTemplateChange }: StyleCustomizerProps) {
+export function StyleCustomizer({ style, onStyleChange }: StyleCustomizerProps) {
   const handleStyleChange = (field: keyof SignatureStyle) => (value: string) => {
     onStyleChange({ ...style, [field]: value });
-  };
-
-  const handleTemplateChange = (key: keyof SignatureTemplate, value: unknown) => {
-    onTemplateChange({
-      ...template,
-      [key]: value
-    });
   };
 
   return (
@@ -79,34 +69,6 @@ export function StyleCustomizer({ style, template, onStyleChange, onTemplateChan
             />
           </div>
         </div>
-
-        <div className="flex items-center space-x-3 p-4 bg-muted/10 rounded-lg hover-lift transition-all duration-200">
-          <Checkbox
-            id="show-icons"
-            checked={template.showIcons}
-            onCheckedChange={(checked) => handleTemplateChange('showIcons', checked)}
-            className="focus-ring"
-          />
-          <Label htmlFor="show-icons" className="text-sm font-medium cursor-pointer">Show Icons</Label>
-        </div>
-
-        {template.showIcons && (
-          <div className="space-y-3 animate-in slide-in-from-top">
-            <Label className="text-sm font-medium">Icon Style</Label>
-            <Select 
-              value={template.iconStyle} 
-              onValueChange={(value) => handleTemplateChange('iconStyle', value)}
-            >
-              <SelectTrigger className="hover-lift focus-ring">
-                <SelectValue placeholder="Select icon style" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="outline">Outline</SelectItem>
-                <SelectItem value="solid">Solid</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
