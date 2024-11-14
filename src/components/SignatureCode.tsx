@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
-import { Button } from './UI/Button';
+import { Button } from './ui/button';
 import { Check, Copy } from 'lucide-react';
 
 interface SignatureCodeProps {
