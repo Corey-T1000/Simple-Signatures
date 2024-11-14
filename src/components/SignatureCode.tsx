@@ -233,7 +233,7 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
   };
 
   return (
-    <Card className="animate-in scale-in shadow-lg">
+    <div className="animate-in scale-in">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
         <CardTitle className="text-2xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
           HTML Code
@@ -268,6 +268,6 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
           </pre>
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }

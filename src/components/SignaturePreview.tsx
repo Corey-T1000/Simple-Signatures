@@ -148,6 +148,33 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
     setHasContrastWarning(!primaryMeetsContrast || !secondaryMeetsContrast);
   }, [colors.primary, colors.secondary, backgroundColor]);
 
+  const getImageSize = () => {
+    const baseSize = 120;
+    const scale = template.imageScale / 100;
+    return Math.round(baseSize * scale);
+  };
+
+  const getImageStyle = (): CSSProperties => {
+    const imageStyle: CSSProperties = {
+      objectFit: imageSettings?.objectFit || template.imageFit,
+      width: `${getImageSize()}px`,
+      height: `${getImageSize()}px`,
+      maxWidth: '300px',
+      maxHeight: '300px',
+      boxShadow: getShadowStyle(),
+    };
+
+    if (imageSettings?.shape === 'rounded') {
+      imageStyle.borderRadius = `${imageSettings.cornerRadius}px`;
+    } else if (template.imageStyle === 'rounded') {
+      imageStyle.borderRadius = '9999px';
+    } else {
+      imageStyle.borderRadius = '8px';
+    }
+
+    return imageStyle;
+  };
+
   const renderTitleSection = () => (
     <>
       <tr>
@@ -226,23 +253,6 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
       )}
     </>
   );
-
-  const getImageStyle = (): CSSProperties => {
-    const imageStyle: CSSProperties = {
-      objectFit: imageSettings?.objectFit || template.imageFit,
-      boxShadow: getShadowStyle(),
-    };
-
-    if (imageSettings?.shape === 'rounded') {
-      imageStyle.borderRadius = `${imageSettings.cornerRadius}px`;
-    } else if (template.imageStyle === 'rounded') {
-      imageStyle.borderRadius = '9999px';
-    } else {
-      imageStyle.borderRadius = '8px';
-    }
-
-    return imageStyle;
-  };
 
   const renderCTAs = () => {
     if (!data.ctaText && !data.additionalCtaText) return null;
@@ -333,7 +343,10 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
   return (
     <div className="space-y-2 animate-in scale-in">
       <Card className="overflow-hidden shadow-lg transition-shadow duration-200 hover:shadow-xl">
-        <div className="p-6 bg-gradient-to-b from-background to-muted/10">
+        <div style={{
+          padding: `${template.padding.top}px ${template.padding.right}px ${template.padding.bottom}px ${template.padding.left}px`,
+          background: 'linear-gradient(180deg, var(--background) 0%, var(--muted-10) 100%)'
+        }}>
           <table cellPadding="0" cellSpacing="0" border={0} style={{
             fontFamily: style.fontFamily,
             color: colors.secondary,
@@ -345,7 +358,6 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                 <td style={{
                   verticalAlign: 'top',
                   textAlign: 'left',
-                  padding: `${template.padding.top}px ${template.padding.right}px ${template.padding.bottom}px ${template.padding.left}px`
                 }}>
                   <table cellPadding="0" cellSpacing="0" border={0} style={{
                     display: 'inline-block',
@@ -361,8 +373,6 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                             <img
                               src={data.photo}
                               alt={data.fullName}
-                              width={100 * template.imageScale}
-                              height={100 * template.imageScale}
                               style={getImageStyle()}
                             />
                           </td>
@@ -377,8 +387,6 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                               <img
                                 src={data.photo}
                                 alt={data.fullName}
-                                width={100 * template.imageScale}
-                                height={100 * template.imageScale}
                                 style={getImageStyle()}
                               />
                             </div>

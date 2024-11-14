@@ -25,3 +25,7 @@ export function getFromStorage(): StorageData {
     return {};
   }
 }
+
+export function clearStorage() {
+  localStorage.removeItem(STORAGE_KEY);
+}

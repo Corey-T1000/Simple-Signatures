@@ -1,146 +1,180 @@
-import { SignatureData, SignatureStyle, SignatureTemplate } from '../types/signature';
-import { TemplateCustomizer } from './TemplateCustomizer';
-import { StyleCustomizer } from './StyleCustomizer';
-import { Input } from './ui/Input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { SignatureData } from '../types/signature';
+import { Input } from './ui/input';
+import { Card } from './ui/card';
+import { 
+  User, 
+  Briefcase, 
+  Building2, 
+  Mail, 
+  Phone, 
+  Globe, 
+  Image, 
+  MousePointer,
+  Link
+} from 'lucide-react';
 
 interface SignatureFormProps {
   data: SignatureData;
-  style: SignatureStyle;
-  template: SignatureTemplate;
-  onDataChange: (data: SignatureData) => void;
-  onStyleChange: (style: SignatureStyle) => void;
-  onTemplateChange: (template: SignatureTemplate) => void;
+  onDataChange: (field: keyof SignatureData) => (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function SignatureForm({
-  data,
-  style,
-  template,
-  onDataChange,
-  onStyleChange,
-  onTemplateChange
-}: SignatureFormProps) {
-  const handleDataChange = (key: keyof SignatureData, value: string) => {
-    onDataChange({
-      ...data,
-      [key]: value
-    });
-  };
-
+export function SignatureForm({ data, onDataChange }: SignatureFormProps) {
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="photo">Photo URL</Label>
-              <Input
-                id="photo"
-                type="url"
-                value={data.photo}
-                onChange={(e) => handleDataChange('photo', e.target.value)}
-              />
+    <Card className="p-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <label htmlFor="fullName">Full Name</label>
             </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                type="text"
-                value={data.fullName}
-                onChange={(e) => handleDataChange('fullName', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="jobTitle">Job Title</Label>
-              <Input
-                id="jobTitle"
-                type="text"
-                value={data.jobTitle}
-                onChange={(e) => handleDataChange('jobTitle', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="company">Company</Label>
-              <Input
-                id="company"
-                type="text"
-                value={data.company}
-                onChange={(e) => handleDataChange('company', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={data.phone}
-                onChange={(e) => handleDataChange('phone', e.target.value)}
-              />
-            </div>
-
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="ctaText">CTA Text</Label>
-                <Input
-                  id="ctaText"
-                  type="text"
-                  value={data.ctaText}
-                  onChange={(e) => handleDataChange('ctaText', e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="ctaLink">CTA Link</Label>
-                <Input
-                  id="ctaLink"
-                  type="url"
-                  value={data.ctaLink}
-                  onChange={(e) => handleDataChange('ctaLink', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="additionalCtaText">Additional CTA Text</Label>
-                <Input
-                  id="additionalCtaText"
-                  type="text"
-                  value={data.additionalCtaText}
-                  onChange={(e) => handleDataChange('additionalCtaText', e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="additionalCtaLink">Additional CTA Link</Label>
-                <Input
-                  id="additionalCtaLink"
-                  type="url"
-                  value={data.additionalCtaLink}
-                  onChange={(e) => handleDataChange('additionalCtaLink', e.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              id="fullName"
+              value={data.fullName}
+              onChange={onDataChange('fullName')}
+              placeholder="John Doe"
+            />
           </div>
-        </CardContent>
-      </Card>
 
-      <StyleCustomizer
-        style={style}
-        onChange={onStyleChange}
-      />
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              <label htmlFor="jobTitle">Job Title</label>
+            </div>
+            <Input
+              id="jobTitle"
+              value={data.jobTitle}
+              onChange={onDataChange('jobTitle')}
+              placeholder="Software Engineer"
+            />
+          </div>
 
-      <TemplateCustomizer
-        template={template}
-        onTemplateChange={onTemplateChange}
-      />
-    </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              <label htmlFor="company">Company</label>
+            </div>
+            <Input
+              id="company"
+              value={data.company}
+              onChange={onDataChange('company')}
+              placeholder="Acme Inc."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              <label htmlFor="email">Email</label>
+            </div>
+            <Input
+              id="email"
+              type="email"
+              value={data.email}
+              onChange={onDataChange('email')}
+              placeholder="john@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              <label htmlFor="phone">Phone</label>
+            </div>
+            <Input
+              id="phone"
+              type="tel"
+              value={data.phone}
+              onChange={onDataChange('phone')}
+              placeholder="+1 (555) 123-4567"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              <label htmlFor="website">Website</label>
+            </div>
+            <Input
+              id="website"
+              type="url"
+              value={data.website}
+              onChange={onDataChange('website')}
+              placeholder="https://example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Image className="h-4 w-4" />
+              <label htmlFor="photo">Photo URL</label>
+            </div>
+            <Input
+              id="photo"
+              type="url"
+              value={data.photo}
+              onChange={onDataChange('photo')}
+              placeholder="https://example.com/photo.jpg"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <MousePointer className="h-4 w-4" />
+              <label htmlFor="ctaText">CTA Text</label>
+            </div>
+            <Input
+              id="ctaText"
+              value={data.ctaText}
+              onChange={onDataChange('ctaText')}
+              placeholder="Schedule a Meeting"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Link className="h-4 w-4" />
+              <label htmlFor="ctaLink">CTA Link</label>
+            </div>
+            <Input
+              id="ctaLink"
+              type="url"
+              value={data.ctaLink}
+              onChange={onDataChange('ctaLink')}
+              placeholder="https://calendly.com/johndoe"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <MousePointer className="h-4 w-4" />
+              <label htmlFor="additionalCtaText">Additional CTA Text</label>
+            </div>
+            <Input
+              id="additionalCtaText"
+              value={data.additionalCtaText}
+              onChange={onDataChange('additionalCtaText')}
+              placeholder="Visit Our Website"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Link className="h-4 w-4" />
+              <label htmlFor="additionalCtaLink">Additional CTA Link</label>
+            </div>
+            <Input
+              id="additionalCtaLink"
+              type="url"
+              value={data.additionalCtaLink}
+              onChange={onDataChange('additionalCtaLink')}
+              placeholder="https://example.com"
+            />
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }

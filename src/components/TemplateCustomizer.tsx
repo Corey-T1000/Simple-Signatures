@@ -2,7 +2,6 @@ import { SignatureTemplate } from '../types/signature';
 import { Slider } from './ui/Slider';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Checkbox } from './ui/checkbox';
 import { CardHeader, CardTitle } from './ui/card';
 
 interface TemplateCustomizerProps {
@@ -125,15 +124,6 @@ export function TemplateCustomizer({ template, onTemplateChange }: TemplateCusto
             onValueChange={([value]) => handleChange('imageScale', value / 100)}
             className="pt-2"
           />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="show-icons"
-            checked={template.showIcons}
-            onCheckedChange={(checked) => handleChange('showIcons', checked)}
-          />
-          <Label htmlFor="show-icons">Show Icons</Label>
         </div>
 
         <div className="space-y-4">

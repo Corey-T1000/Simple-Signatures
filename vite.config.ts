@@ -7,7 +7,16 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    // Ensure HMR websocket connection works
+    hmr: {
+      overlay: true,
+    },
+    watch: {
+      usePolling: true,
     },
   },
 })

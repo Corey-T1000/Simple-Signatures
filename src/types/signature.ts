@@ -49,8 +49,11 @@ export interface ImageSettings {
   shadowBlur: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
-  shape: 'rounded' | 'square';
-  cornerRadius: number;
+  border: {
+    width: number;
+    color: string;
+    style: 'solid' | 'dashed' | 'dotted';
+  };
 }
 
 export interface SignatureElement {

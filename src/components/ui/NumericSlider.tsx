@@ -1,4 +1,4 @@
-import { Input } from './Input';
+import { Input } from './input';
 import { Label } from './label';
 import { Slider } from './Slider';
 import { useState, useEffect } from 'react';
@@ -19,19 +19,28 @@ export function NumericSlider({
   min, 
   max, 
   step, 
-  value, 
+  value = 0, 
   onChange,
   unit = '',
   precision = 0
 }: NumericSliderProps) {
-  const [inputValue, setInputValue] = useState(value.toFixed(precision));
+  const [inputValue, setInputValue] = useState(() => {
+    // Ensure value is a number and within bounds
+    const validValue = typeof value === 'number' ? value : 0;
+    return Math.max(min, Math.min(max, validValue)).toFixed(precision);
+  });
 
   useEffect(() => {
-    setInputValue(value.toFixed(precision));
-  }, [value, precision]);
+    if (typeof value === 'number' && !isNaN(value)) {
+      const validValue = Math.max(min, Math.min(max, value));
+      setInputValue(validValue.toFixed(precision));
+    }
+  }, [value, precision, min, max]);
 
   const handleSliderChange = ([newValue]: number[]) => {
-    onChange(newValue);
+    if (typeof newValue === 'number' && !isNaN(newValue)) {
+      onChange(newValue);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,37 +61,29 @@ export function NumericSlider({
     } else if (numericValue > max) {
       setInputValue(max.toFixed(precision));
       onChange(max);
-    } else {
-      // Round to nearest step
-      const roundedValue = Math.round(numericValue / step) * step;
-      setInputValue(roundedValue.toFixed(precision));
-      onChange(roundedValue);
     }
   };
 
   return (
-    <div className="space-y-2">
+    <div className="grid gap-2">
       <div className="flex items-center justify-between">
         <Label>{label}</Label>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center space-x-2">
           <Input
-            type="number"
-            min={min}
-            max={max}
-            step={step}
+            type="text"
             value={inputValue}
             onChange={handleInputChange}
             onBlur={handleInputBlur}
-            className="w-16 text-right"
+            className="w-20 text-right"
           />
-          {unit && <span className="text-sm text-muted-foreground w-6">{unit}</span>}
+          {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
         </div>
       </div>
       <Slider
+        defaultValue={[typeof value === 'number' ? value : min]}
         min={min}
         max={max}
         step={step}
-        value={[value]}
         onValueChange={handleSliderChange}
       />
     </div>

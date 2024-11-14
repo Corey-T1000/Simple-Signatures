@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Label } from './ui/label';
 import {
   Select,
@@ -9,12 +9,35 @@ import {
   SelectValue,
 } from './ui/select';
 import { NumericSlider } from './ui/NumericSlider';
+import { Switch } from './ui/switch';
+import { Button } from './ui/button';
 import { SignatureTemplate } from '../types/signature';
+import { 
+  Layout, 
+  ArrowRightLeft,
+  ArrowUpDown,
+  Grid,
+  LayoutGrid,
+  Table,
+  RotateCcw
+} from 'lucide-react';
+import { Separator } from './ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface LayoutCustomizerProps {
   template: SignatureTemplate;
   onTemplateChange: (template: SignatureTemplate) => void;
 }
+
+const defaultTemplate: SignatureTemplate = {
+  layout: 'horizontal',
+  contentStyle: 'spacious',
+  titleLayout: 'stacked',
+  ctaLayout: 'stacked',
+  imageScale: 1,
+  imagePosition: 'left',
+  padding: { top: 16, right: 16, bottom: 16, left: 16 }
+};
 
 export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomizerProps) {
   const handleLayoutChange = (value: 'horizontal' | 'vertical') => {
@@ -52,94 +75,166 @@ export function LayoutCustomizer({ template, onTemplateChange }: LayoutCustomize
     });
   };
 
-  const handleImageSpacingChange = (value: number) => {
+  const handleImagePositionChange = (value: 'left' | 'right' | 'top' | 'bottom') => {
     onTemplateChange({
       ...template,
-      imageSpacing: value
+      imagePosition: value
     });
+  };
+
+  const resetToDefault = () => {
+    onTemplateChange(defaultTemplate);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Layout Options</CardTitle>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Layout Settings</CardTitle>
+            <CardDescription>Customize the arrangement of your signature elements</CardDescription>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={resetToDefault}
+                  className="h-8 w-8"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Reset to default layout</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Layout className="h-4 w-4" />
+              Main Layout
+            </Label>
+            <Select value={template.layout} onValueChange={handleLayoutChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose layout" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="horizontal">
+                  <div className="flex items-center gap-2">
+                    <ArrowRightLeft className="h-4 w-4" />
+                    Horizontal
+                  </div>
+                </SelectItem>
+                <SelectItem value="vertical">
+                  <div className="flex items-center gap-2">
+                    <ArrowUpDown className="h-4 w-4" />
+                    Vertical
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <LayoutGrid className="h-4 w-4" />
+              Content Style
+            </Label>
+            <Select value={template.contentStyle} onValueChange={handleContentStyleChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose style" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="compact">
+                  <div className="flex items-center gap-2">
+                    <Grid className="h-4 w-4" />
+                    Compact
+                  </div>
+                </SelectItem>
+                <SelectItem value="spacious">
+                  <div className="flex items-center gap-2">
+                    <Table className="h-4 w-4" />
+                    Spacious
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <Separator />
+
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Layout Direction</Label>
-            <Select defaultValue={template.layout} onValueChange={handleLayoutChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select layout" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="horizontal">Horizontal</SelectItem>
-                <SelectItem value="vertical">Vertical</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Label>Title & Contact Layout</Label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="text-sm text-muted-foreground">Name & Title</Label>
+              <Select value={template.titleLayout} onValueChange={handleTitleLayoutChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose layout" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="stacked">Stacked</SelectItem>
+                  <SelectItem value="inline">Inline</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Content Style</Label>
-            <Select defaultValue={template.contentStyle} onValueChange={handleContentStyleChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select style" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="compact">Compact</SelectItem>
-                <SelectItem value="spacious">Spacious</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Label className="text-sm text-muted-foreground">Call-to-Action</Label>
+              <Select value={template.ctaLayout} onValueChange={handleCtaLayoutChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose layout" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="stacked">Stacked</SelectItem>
+                  <SelectItem value="inline">Inline</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label>Title Layout</Label>
-            <Select defaultValue={template.titleLayout} onValueChange={handleTitleLayoutChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select title layout" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="stacked">Stacked</SelectItem>
-                <SelectItem value="inline">Inline</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <Separator />
 
-          <div className="space-y-2">
-            <Label>CTA Layout</Label>
-            <Select defaultValue={template.ctaLayout} onValueChange={handleCtaLayoutChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select CTA layout" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="stacked">Stacked</SelectItem>
-                <SelectItem value="inline">Inline</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-4">
+          <Label>Image Settings</Label>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-sm text-muted-foreground">Image Position</Label>
+              <Select 
+                value={template.imagePosition} 
+                onValueChange={handleImagePositionChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose position" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="left">Left</SelectItem>
+                  <SelectItem value="right">Right</SelectItem>
+                  <SelectItem value="top">Top</SelectItem>
+                  <SelectItem value="bottom">Bottom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Image Settings</Label>
-            <div className="pl-4 space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm text-muted-foreground">Image Scale</Label>
+                <span className="text-sm text-muted-foreground">{template.imageScale}x</span>
+              </div>
               <NumericSlider
-                label="Size Scale"
                 min={0.5}
                 max={2}
                 step={0.1}
                 value={template.imageScale}
                 onChange={handleImageScaleChange}
-                unit="x"
-                precision={1}
-              />
-
-              <NumericSlider
-                label="Spacing"
-                min={0}
-                max={40}
-                step={4}
-                value={template.imageSpacing}
-                onChange={handleImageSpacingChange}
-                unit="px"
               />
             </div>
           </div>

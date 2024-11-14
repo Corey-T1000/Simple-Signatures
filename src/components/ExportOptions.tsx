@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Select } from './ui/select';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
-import { Check, Download } from 'lucide-react';
+import { Check, Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface ExportOptionsProps {
@@ -19,6 +19,7 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('html');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const generateShadowStyle = () => {
     if (!imageSettings?.shadow) return '';
@@ -160,20 +161,9 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
     }
   };
 
-  const handleCopy = async () => {
+  const handleExport = async () => {
     try {
-      const content = convertToFormat(selectedFormat);
-      await navigator.clipboard.writeText(content);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      setError(null);
-    } catch {
-      setError('Failed to copy to clipboard');
-    }
-  };
-
-  const handleDownload = () => {
-    try {
+      setLoading(true);
       const content = convertToFormat(selectedFormat);
       const mimeType = selectedFormat === 'html' ? 'text/html' : 'text/plain';
       const extension = selectedFormat === 'html' ? 'html' : 'txt';
@@ -188,8 +178,10 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       setError(null);
+      setLoading(false);
     } catch {
       setError('Failed to download signature');
+      setLoading(false);
     }
   };
 
@@ -204,37 +196,32 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
             value={selectedFormat}
             onValueChange={(value) => setSelectedFormat(value as ExportFormat)}
           >
-            <option value="html">HTML</option>
-            <option value="plainText">Plain Text</option>
-            <option value="richText">Rich Text</option>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select format" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="html">HTML</SelectItem>
+              <SelectItem value="image">Image</SelectItem>
+            </SelectContent>
           </Select>
-          <Button
-            onClick={handleCopy}
-            variant={copied ? "success" : "outline"}
-            className="hover-lift transition-all duration-200"
-          >
-            {copied ? (
+          <Button onClick={handleExport} disabled={loading}>
+            {loading ? (
               <>
-                <Check className="h-4 w-4 mr-2" />
-                Copied!
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Exporting...
               </>
             ) : (
-              'Copy to Clipboard'
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </>
             )}
-          </Button>
-          <Button
-            onClick={handleDownload}
-            variant="default"
-            className="hover-lift transition-all duration-200"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Download
           </Button>
         </div>
         {error && (
           <div className={cn(
-            "text-red-500 text-sm mt-2",
-            "animate-in slide-in-from-top-1"
+            "p-3 rounded-lg text-sm",
+            "bg-destructive/15 text-destructive"
           )} role="alert">
             {error}
           </div>
