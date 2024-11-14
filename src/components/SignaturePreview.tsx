@@ -1,8 +1,8 @@
 import React, { useState, useEffect, CSSProperties, Fragment } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
-import { Card } from './ui/card';
+import { Card } from './UI/Card';
 import { useTheme } from '../lib/use-theme';
-import { ColorWarning } from './ui/ColorWarning';
+import { ColorWarning } from './UI/ColorWarning';
 
 interface SignaturePreviewProps {
   data: SignatureData;

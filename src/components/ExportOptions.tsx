@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './UI/Button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './UI/Select';
+import { Card, CardContent, CardHeader, CardTitle } from './UI/Card';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';

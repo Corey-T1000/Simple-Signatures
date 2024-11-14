@@ -1,5 +1,5 @@
 import { SignatureData } from '../types/signature';
-import { Input } from './ui/input';
+import { Input } from './UI/Input';
 import { 
   User, 
   Briefcase, 
