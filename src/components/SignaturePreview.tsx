@@ -1,8 +1,8 @@
+import React, { useState, useEffect, CSSProperties, Fragment } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Card } from './ui/card';
 import { useTheme } from '../lib/use-theme';
 import { ColorWarning } from './ui/ColorWarning';
-import { useState, useEffect, CSSProperties } from 'react';
 
 interface SignaturePreviewProps {
   data: SignatureData;
@@ -175,169 +175,194 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
     return imageStyle;
   };
 
-  const renderTitleSection = () => (
-    <>
-      <tr>
-        <td style={{
-          fontSize: '20px',
-          fontWeight: 'bold',
-          color: colors.primary,
-          letterSpacing: '-0.02em',
-          lineHeight: spacing.lineHeight,
-          paddingBottom: spacing.titleBottom
-        }}>
-          {data.fullName}
-        </td>
-      </tr>
-      {(data.jobTitle || data.company) && (
-        <tr>
-          <td style={{ paddingBottom: spacing.sectionBottom }}>
-            {template.titleLayout === 'inline' ? (
-              <table cellPadding="0" cellSpacing="0" border={0}>
-                <tbody>
-                  <tr>
-                    {data.jobTitle && (
-                      <td style={{ 
-                        color: colors.muted,
-                        lineHeight: spacing.lineHeight,
-                        paddingRight: '8px'
-                      }}>
-                        {data.jobTitle}
-                      </td>
-                    )}
-                    {data.jobTitle && data.company && (
-                      <td style={{ 
-                        color: colors.muted,
-                        lineHeight: spacing.lineHeight,
-                        paddingRight: '8px'
-                      }}>
-                        •
-                      </td>
-                    )}
-                    {data.company && (
-                      <td style={{ 
-                        fontWeight: 600,
-                        lineHeight: spacing.lineHeight,
-                        color: colors.secondary
-                      }}>
-                        {data.company}
-                      </td>
-                    )}
-                  </tr>
-                </tbody>
-              </table>
-            ) : (
-              <>
-                {data.jobTitle && (
-                  <div style={{ 
-                    color: colors.muted,
-                    lineHeight: spacing.lineHeight,
-                    paddingBottom: data.company ? '2px' : 0
-                  }}>
-                    {data.jobTitle}
-                  </div>
-                )}
-                {data.company && (
-                  <div style={{ 
-                    fontWeight: 600,
-                    lineHeight: spacing.lineHeight,
-                    color: colors.secondary
-                  }}>
-                    {data.company}
-                  </div>
-                )}
-              </>
-            )}
-          </td>
-        </tr>
-      )}
-    </>
-  );
-
-  const renderCTAs = () => {
-    if (!data.ctaText && !data.additionalCtaText) return null;
-
-    if (template.ctaLayout === 'inline') {
-      return (
-        <tr>
-          <td style={{ padding: spacing.itemPadding }}>
-            {data.ctaText && (
-              <a 
-                href={data.ctaLink} 
-                style={{ 
-                  color: colors.secondary, 
-                  textDecoration: 'none',
-                  transition: 'all 0.2s ease-in-out'
-                }}
-                className="hover:opacity-80"
-              >
-                {data.ctaText}
-              </a>
-            )}
-            {data.ctaText && data.additionalCtaText && (
-              <span style={{ 
-                color: colors.muted,
-                padding: '0 8px'
+  const renderField = (type: string) => {
+    switch (type) {
+      case 'photo':
+        return null; // Photo is handled separately in the layout
+      case 'fullName':
+        return (
+          <>
+            <tr>
+              <td style={{
+                fontSize: '20px',
+                fontWeight: 'bold',
+                color: colors.primary,
+                letterSpacing: '-0.02em',
+                lineHeight: spacing.lineHeight,
+                paddingBottom: spacing.titleBottom
               }}>
-                •
-              </span>
+                {data.fullName}
+              </td>
+            </tr>
+            {(data.jobTitle || data.company) && (
+              <tr>
+                <td style={{ paddingBottom: spacing.sectionBottom }}>
+                  {template.titleLayout === 'inline' ? (
+                    <table cellPadding="0" cellSpacing="0" border={0}>
+                      <tbody>
+                        <tr>
+                          {data.jobTitle && (
+                            <td style={{ 
+                              color: colors.muted,
+                              lineHeight: spacing.lineHeight,
+                              paddingRight: '8px'
+                            }}>
+                              {data.jobTitle}
+                            </td>
+                          )}
+                          {data.jobTitle && data.company && (
+                            <td style={{ 
+                              color: colors.muted,
+                              lineHeight: spacing.lineHeight,
+                              paddingRight: '8px'
+                            }}>
+                              •
+                            </td>
+                          )}
+                          {data.company && (
+                            <td style={{ 
+                              fontWeight: 600,
+                              lineHeight: spacing.lineHeight,
+                              color: colors.secondary
+                            }}>
+                              {data.company}
+                            </td>
+                          )}
+                        </tr>
+                      </tbody>
+                    </table>
+                  ) : (
+                    <>
+                      {data.jobTitle && (
+                        <div style={{ 
+                          color: colors.muted,
+                          lineHeight: spacing.lineHeight,
+                          paddingBottom: data.company ? '2px' : 0
+                        }}>
+                          {data.jobTitle}
+                        </div>
+                      )}
+                      {data.company && (
+                        <div style={{ 
+                          fontWeight: 600,
+                          lineHeight: spacing.lineHeight,
+                          color: colors.secondary
+                        }}>
+                          {data.company}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </td>
+              </tr>
             )}
-            {data.additionalCtaText && (
-              <a 
-                href={data.additionalCtaLink} 
-                style={{ 
-                  color: colors.secondary, 
+          </>
+        );
+      case 'divider':
+        return (
+          <tr>
+            <td style={{ paddingBottom: spacing.sectionBottom }} />
+          </tr>
+        );
+      case 'email':
+        return data.email && (
+          <tr>
+            <td style={{ padding: spacing.itemPadding }}>
+              <a
+                href={`mailto:${data.email}`}
+                style={{
+                  color: colors.secondary,
                   textDecoration: 'none',
                   transition: 'all 0.2s ease-in-out'
                 }}
                 className="hover:opacity-80"
               >
-                {data.additionalCtaText}
+                {data.email}
               </a>
-            )}
-          </td>
-        </tr>
-      );
-    }
-
-    return (
-      <>
-        {data.ctaText && (
+            </td>
+          </tr>
+        );
+      case 'phone':
+        return data.phone && (
           <tr>
             <td style={{ padding: spacing.itemPadding }}>
-              <a 
-                href={data.ctaLink} 
-                style={{ 
-                  color: colors.secondary, 
+              <a
+                href={`tel:${data.phone}`}
+                style={{
+                  color: colors.secondary,
                   textDecoration: 'none',
                   transition: 'all 0.2s ease-in-out'
                 }}
                 className="hover:opacity-80"
+              >
+                {data.phone}
+              </a>
+            </td>
+          </tr>
+        );
+      case 'website':
+        return data.website && (
+          <tr>
+            <td style={{ padding: spacing.itemPadding }}>
+              <a
+                href={data.website}
+                style={{
+                  color: colors.secondary,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {data.website.replace(/^https?:\/\//, '')}
+              </a>
+            </td>
+          </tr>
+        );
+      case 'cta':
+        return data.ctaText && (
+          <tr>
+            <td style={{ padding: spacing.itemPadding }}>
+              <a
+                href={data.ctaLink}
+                style={{
+                  color: colors.secondary,
+                  textDecoration: 'none',
+                  transition: 'all 0.2s ease-in-out'
+                }}
+                className="hover:opacity-80"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {data.ctaText}
               </a>
             </td>
           </tr>
-        )}
-        {data.additionalCtaText && (
+        );
+      case 'additionalCta':
+        return data.additionalCtaText && (
           <tr>
             <td style={{ padding: spacing.itemPadding }}>
-              <a 
-                href={data.additionalCtaLink} 
-                style={{ 
-                  color: colors.secondary, 
+              <a
+                href={data.additionalCtaLink}
+                style={{
+                  color: colors.secondary,
                   textDecoration: 'none',
                   transition: 'all 0.2s ease-in-out'
                 }}
                 className="hover:opacity-80"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {data.additionalCtaText}
               </a>
             </td>
           </tr>
-        )}
-      </>
-    );
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -365,7 +390,7 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                   }}>
                     <tbody>
                       <tr>
-                        {template.layout === 'horizontal' && data.photo && (
+                        {template.layout === 'horizontal' && template.fieldOrder.find(f => f.type === 'photo' && f.visible) && (
                           <td style={{
                             padding: `0 ${template.imageSpacing}px 0 0`,
                             verticalAlign: 'top'
@@ -378,7 +403,7 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                           </td>
                         )}
                         <td style={{ verticalAlign: 'top' }}>
-                          {template.layout === 'vertical' && data.photo && (
+                          {template.layout === 'vertical' && template.fieldOrder.find(f => f.type === 'photo' && f.visible) && (
                             <div style={{ 
                               textAlign: 'center',
                               paddingBottom: template.imageSpacing,
@@ -395,67 +420,13 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                             textAlign: 'left'
                           }}>
                             <tbody>
-                              {renderTitleSection()}
-                              <tr>
-                                <td>
-                                  <table cellPadding="0" cellSpacing="0" border={0}>
-                                    <tbody>
-                                      {data.email && (
-                                        <tr>
-                                          <td style={{ padding: spacing.itemPadding }}>
-                                            <a 
-                                              href={`mailto:${data.email}`} 
-                                              style={{ 
-                                                color: colors.secondary, 
-                                                textDecoration: 'none',
-                                                transition: 'all 0.2s ease-in-out'
-                                              }}
-                                              className="hover:opacity-80"
-                                            >
-                                              {data.email}
-                                            </a>
-                                          </td>
-                                        </tr>
-                                      )}
-                                      {data.phone && (
-                                        <tr>
-                                          <td style={{ padding: spacing.itemPadding }}>
-                                            <a 
-                                              href={`tel:${data.phone}`} 
-                                              style={{ 
-                                                color: colors.secondary, 
-                                                textDecoration: 'none',
-                                                transition: 'all 0.2s ease-in-out'
-                                              }}
-                                              className="hover:opacity-80"
-                                            >
-                                              {data.phone}
-                                            </a>
-                                          </td>
-                                        </tr>
-                                      )}
-                                      {data.website && (
-                                        <tr>
-                                          <td style={{ padding: spacing.itemPadding }}>
-                                            <a 
-                                              href={data.website} 
-                                              style={{ 
-                                                color: colors.secondary, 
-                                                textDecoration: 'none',
-                                                transition: 'all 0.2s ease-in-out'
-                                              }}
-                                              className="hover:opacity-80"
-                                            >
-                                              {data.website.replace(/^https?:\/\//, '')}
-                                            </a>
-                                          </td>
-                                        </tr>
-                                      )}
-                                      {renderCTAs()}
-                                    </tbody>
-                                  </table>
-                                </td>
-                              </tr>
+                              {template.fieldOrder
+                                .filter(field => field.visible)
+                                .map((field, index) => (
+                                  <Fragment key={`${field.type}-${index}`}>
+                                    {renderField(field.type)}
+                                  </Fragment>
+                                ))}
                             </tbody>
                           </table>
                         </td>
@@ -468,7 +439,7 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
           </table>
         </div>
       </Card>
-      <ColorWarning show={hasContrastWarning} />
+      {hasContrastWarning && <ColorWarning />}
     </div>
   );
 }

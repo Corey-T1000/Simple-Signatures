@@ -1,11 +1,11 @@
 export interface SignatureData {
-  photo: string;
   fullName: string;
   jobTitle: string;
   company: string;
   email: string;
   phone: string;
   website: string;
+  photo: string;
   ctaText: string;
   ctaLink: string;
   additionalCtaText: string;
@@ -17,6 +17,16 @@ export interface SignatureStyle {
   primaryColor: string;
   secondaryColor: string;
   imageFit: 'cover' | 'contain' | 'fill';
+}
+
+export type SignatureFieldType = 'photo' | 'fullName' | 'jobTitle' | 'company' | 'email' | 'phone' | 'website' | 'cta' | 'additionalCta';
+
+export interface SignatureFieldConfig {
+  type: SignatureFieldType;
+  enabled: boolean;
+  visible: boolean;
+  required?: boolean;
+  id: string;
 }
 
 export interface SignatureTemplate {
@@ -36,9 +46,11 @@ export interface SignatureTemplate {
     bottom: number;
     left: number;
   };
+  fieldOrder: SignatureFieldConfig[];
 }
 
 export interface ImageSettings {
+  enabled: boolean;
   width: number;
   height: number;
   objectFit: 'cover' | 'contain' | 'fill';
@@ -54,7 +66,11 @@ export interface ImageSettings {
     color: string;
     style: 'solid' | 'dashed' | 'dotted';
   };
+  shape: 'rounded' | 'square';
+  cornerRadius: number;
 }
+
+export type Theme = 'light' | 'dark';
 
 export interface SignatureElement {
   id: string;

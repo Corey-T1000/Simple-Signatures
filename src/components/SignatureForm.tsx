@@ -1,6 +1,5 @@
 import { SignatureData } from '../types/signature';
 import { Input } from './ui/input';
-import { Card } from './ui/card';
 import { 
   User, 
   Briefcase, 
@@ -20,7 +19,7 @@ interface SignatureFormProps {
 
 export function SignatureForm({ data, onDataChange }: SignatureFormProps) {
   return (
-    <Card className="p-6">
+    <div className="">
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <div className="space-y-2">
@@ -175,6 +174,6 @@ export function SignatureForm({ data, onDataChange }: SignatureFormProps) {
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

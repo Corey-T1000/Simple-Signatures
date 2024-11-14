@@ -1,98 +1,64 @@
-import React from 'react';
+import type { SignatureTemplate, SignatureStyle } from '../types/signature';
 import { Card, CardContent } from './ui/card';
 import { Label } from './ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
-import { Switch } from './ui/switch';
-import { Button } from './ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
 import { NumericInput } from './ui/NumericInput';
-import { SignatureTemplate, SignatureStyle, ImageSettings } from '../types/signature';
-import {
-  Layout,
-  ArrowRightLeft,
-  ArrowUpDown,
-  Grid,
-  LayoutGrid,
-  Table,
-  RotateCcw,
-  Type,
-  Palette,
-  Image as ImageIcon,
-  GripVertical,
-  Link,
-  CircleDot
-} from 'lucide-react';
-import { Separator } from './ui/separator';
+import { Layout, ArrowRightLeft, ArrowUpDown, Grid, Table, Type, Image as ImageIcon, GripVertical } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { cn } from '../lib/utils';
+import { FieldOrderManager } from './FieldOrderManager';
 
 interface SignatureCustomizerProps {
   template: SignatureTemplate;
   style: SignatureStyle;
-  imageSettings: ImageSettings;
   onTemplateChange: (template: SignatureTemplate) => void;
   onStyleChange: (style: SignatureStyle) => void;
-  onImageSettingsChange: (settings: ImageSettings) => void;
 }
 
 export function SignatureCustomizer({
   template,
   style,
-  imageSettings,
   onTemplateChange,
-  onStyleChange,
-  onImageSettingsChange
+  onStyleChange
 }: SignatureCustomizerProps) {
-  const handleLayoutChange = (layout: string) => {
-    onTemplateChange({ ...template, layout });
+  const handleLayoutChange = (value: 'horizontal' | 'vertical') => {
+    onTemplateChange({ ...template, layout: value });
   };
 
-  const handleContentStyleChange = (contentStyle: string) => {
-    onTemplateChange({ ...template, contentStyle });
+  const handleContentStyleChange = (value: 'compact' | 'spacious') => {
+    onTemplateChange({ ...template, contentStyle: value });
   };
 
-  const handleTitleLayoutChange = (titleLayout: string) => {
-    onTemplateChange({ ...template, titleLayout });
+  const handleTitleLayoutChange = (value: 'stacked' | 'inline') => {
+    onTemplateChange({ ...template, titleLayout: value });
   };
 
-  const handleCtaLayoutChange = (ctaLayout: string) => {
-    onTemplateChange({ ...template, ctaLayout });
+  const handleCtaLayoutChange = (value: 'stacked' | 'inline') => {
+    onTemplateChange({ ...template, ctaLayout: value });
   };
 
-  const handleImageStyleChange = (imageStyle: string) => {
-    onTemplateChange({ ...template, imageStyle });
+  const handleImageStyleChange = (value: 'rounded' | 'square') => {
+    onTemplateChange({ ...template, imageStyle: value });
   };
 
-  const handleImageAlignmentChange = (imageAlignment: string) => {
-    onTemplateChange({ ...template, imageAlignment });
+  const handleImageAlignmentChange = (value: 'start' | 'center' | 'end') => {
+    onTemplateChange({ ...template, imageAlignment: value });
   };
 
-  const handleFontFamilyChange = (fontFamily: string) => {
-    onStyleChange({ ...style, fontFamily });
+  const handleFontFamilyChange = (value: string) => {
+    onStyleChange({ ...style, fontFamily: value });
   };
 
-  const handleColorChange = (color: string, type: 'primary' | 'secondary') => {
+  const handleColorChange = (value: string, type: 'primary' | 'secondary') => {
     onStyleChange({
       ...style,
-      [type === 'primary' ? 'primaryColor' : 'secondaryColor']: color,
+      [type === 'primary' ? 'primaryColor' : 'secondaryColor']: value,
     });
   };
 
-  const handleImageFitChange = (imageFit: string) => {
-    onStyleChange({ ...style, imageFit });
-  };
-
-  const handleImageSettingsChange = (
-    field: keyof ImageSettings,
-    value: number | boolean
-  ) => {
-    onImageSettingsChange({ ...imageSettings, [field]: value });
+  const handleImageFitChange = (value: 'cover' | 'contain' | 'fill') => {
+    onStyleChange({ ...style, imageFit: value });
   };
 
   const handleImageScaleChange = (value: number) => {
@@ -113,22 +79,20 @@ export function SignatureCustomizer({
   };
 
   return (
-    <TooltipProvider>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {/* Layout Section */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
-                <Layout className="h-5 w-5" />
-                <h3 className="font-semibold">Layout</h3>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Direction</Label>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min grid-auto-flow-dense">
+        <Card className="h-fit">
+          <div className="space-y-4 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Layout className="h-5 w-5" />
+              <h3 className="font-semibold">Layout Options</h3>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Direction</Label>
+                <div className="flex gap-2">
                   <Select value={template.layout} onValueChange={handleLayoutChange}>
-                    <SelectTrigger>
+                    <SelectTrigger className="flex-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -146,63 +110,102 @@ export function SignatureCustomizer({
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Content Style</Label>
-                  <Select value={template.contentStyle} onValueChange={handleContentStyleChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="compact">
-                        <div className="flex items-center gap-2">
-                          <Grid className="h-4 w-4" />
-                          Compact
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="spacious">
-                        <div className="flex items-center gap-2">
-                          <Table className="h-4 w-4" />
-                          Spacious
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Title Layout</Label>
-                  <Select value={template.titleLayout} onValueChange={handleTitleLayoutChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stacked">Stacked</SelectItem>
-                      <SelectItem value="inline">Inline</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>CTA Layout</Label>
-                  <Select value={template.ctaLayout} onValueChange={handleCtaLayoutChange}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stacked">Stacked</SelectItem>
-                      <SelectItem value="inline">Inline</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => onTemplateChange({ ...template, layout: template.layout === 'horizontal' ? 'vertical' : 'horizontal' })}
+                        >
+                          {template.layout === 'horizontal' ? (
+                            <ArrowRightLeft className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Toggle Layout Direction</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label>Content Style</Label>
+                <Select value={template.contentStyle} onValueChange={handleContentStyleChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="compact">
+                      <div className="flex items-center gap-2">
+                        <Grid className="h-4 w-4" />
+                        Compact
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="spacious">
+                      <div className="flex items-center gap-2">
+                        <Table className="h-4 w-4" />
+                        Spacious
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Title Layout</Label>
+                <Select value={template.titleLayout} onValueChange={handleTitleLayoutChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stacked">
+                      <div className="flex items-center gap-2">
+                        <ArrowUpDown className="h-4 w-4" />
+                        Stacked
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="inline">
+                      <div className="flex items-center gap-2">
+                        <ArrowRightLeft className="h-4 w-4" />
+                        Inline
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>CTA Layout</Label>
+                <Select value={template.ctaLayout} onValueChange={handleCtaLayoutChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stacked">
+                      <div className="flex items-center gap-2">
+                        <ArrowUpDown className="h-4 w-4" />
+                        Stacked
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="inline">
+                      <div className="flex items-center gap-2">
+                        <ArrowRightLeft className="h-4 w-4" />
+                        Inline
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
-        {/* Style Section */}
-        <Card>
+        <Card className="h-fit">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -255,8 +258,7 @@ export function SignatureCustomizer({
           </CardContent>
         </Card>
 
-        {/* Image Section */}
-        <Card>
+        <Card className="h-fit">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -273,7 +275,6 @@ export function SignatureCustomizer({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="rounded">Rounded</SelectItem>
-                      <SelectItem value="circle">Circle</SelectItem>
                       <SelectItem value="square">Square</SelectItem>
                     </SelectContent>
                   </Select>
@@ -323,8 +324,7 @@ export function SignatureCustomizer({
           </CardContent>
         </Card>
 
-        {/* Spacing Section */}
-        <Card>
+        <Card className="h-fit">
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
@@ -384,7 +384,8 @@ export function SignatureCustomizer({
             </div>
           </CardContent>
         </Card>
+
+        <FieldOrderManager template={template} onTemplateChange={onTemplateChange} />
       </div>
-    </TooltipProvider>
   );
 }

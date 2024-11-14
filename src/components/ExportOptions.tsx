@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
-import { Check, Download, Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface ExportOptionsProps {
@@ -17,7 +17,6 @@ type ExportFormat = 'html' | 'plainText' | 'richText';
 
 export function ExportOptions({ template, data, style, imageSettings }: ExportOptionsProps) {
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('html');
-  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
