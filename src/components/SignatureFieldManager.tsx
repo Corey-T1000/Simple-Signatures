@@ -11,6 +11,7 @@ import {
   MapPin,
   Share,
   ChevronDown,
+  Palette,
 } from 'lucide-react';
 
 import { DndContext, DragEndEvent, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -19,13 +20,15 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import * as Collapsible from '@radix-ui/react-collapsible';
 
 import { SortableField } from './SortableField';
-import { SignatureTemplate, SignatureFieldType, SignatureData, ImageSettings } from '../types/signature';
+import { SignatureTemplate, SignatureFieldType, SignatureData, ImageSettings, SignatureStyle } from '../types/signature';
 import { Switch } from '../components/ui/switch';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Slider } from '../components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Button } from '../components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/card';
+import { ColorCustomizer } from './ColorCustomizer';
 
 const fieldIcons: Record<SignatureFieldType, React.ReactNode> = {
   photo: <Image className="h-4 w-4" />,
@@ -58,19 +61,23 @@ const fieldLabels: Record<SignatureFieldType, string> = {
 interface SignatureFieldManagerProps {
   template: SignatureTemplate;
   data: SignatureData;
+  style: SignatureStyle;
   imageSettings: ImageSettings;
   onTemplateChange: (template: SignatureTemplate) => void;
   onDataChange: (field: keyof SignatureData) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onImageSettingsChange: (settings: Partial<ImageSettings>) => void;
+  onStyleChange: (style: SignatureStyle) => void;
 }
 
 export function SignatureFieldManager({
   template,
   data,
+  style,
   imageSettings,
   onTemplateChange,
   onDataChange,
-  onImageSettingsChange
+  onImageSettingsChange,
+  onStyleChange
 }: SignatureFieldManagerProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -112,35 +119,33 @@ export function SignatureFieldManager({
   };
 
   return (
-    <div className="space-y-4">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
-      >
-        <SortableContext items={items} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
-            {template.fieldOrder
-              .filter(field => fieldLabels[field.type])
-              .map((field) => (
-                <SortableField key={field.id} id={field.id}>
-                  <div className="flex-1">
-                    <Collapsible.Root>
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center gap-2">
-                          {fieldIcons[field.type]}
-                          <span className="font-medium">{fieldLabels[field.type]}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {field.visible ? (
-                            <Input
-                              value={data[field.type as keyof SignatureData] || ''}
-                              onChange={onDataChange(field.type as keyof SignatureData)}
-                              placeholder={`Enter ${fieldLabels[field.type].toLowerCase()}`}
-                              className="flex-1 ml-4"
-                            />
-                          ) : (
+    <div className="space-y-6">
+
+        <CardContent>
+          <ColorCustomizer style={style} onChange={onStyleChange} />
+        </CardContent>
+
+      <div className="space-y-4">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
+        >
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            <div className="space-y-2">
+              {template.fieldOrder
+                .filter(field => fieldLabels[field.type])
+                .map((field) => (
+                  <SortableField key={field.id} id={field.id}>
+                    <div className="flex-1">
+                      <Collapsible.Root>
+                        <div className="flex items-center justify-between w-full p-2 hover:bg-accent/5 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            {fieldIcons[field.type]}
+                            <span className="font-medium">{fieldLabels[field.type]}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <Switch
                               checked={field.visible}
                               onCheckedChange={() => {
@@ -153,90 +158,67 @@ export function SignatureFieldManager({
                                 });
                               }}
                             />
-                          )}
-                          <Collapsible.Trigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </Collapsible.Trigger>
-                        </div>
-                      </div>
-                      <Collapsible.Content>
-                        <div className="pt-4 space-y-4">
-                          <div className="space-y-2">
-                            <Label>Spacing After</Label>
-                            <Slider
-                              value={[field.spacing]}
-                              onValueChange={([value]) => handleSpacingChange(field.id, value)}
-                              min={0}
-                              max={48}
-                              step={4}
-                            />
+                            <Collapsible.Trigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </Collapsible.Trigger>
                           </div>
-                          
-                          {field.type === 'photo' && (
-                            <div className="space-y-4">
+                        </div>
+                        <Collapsible.Content>
+                          <div className="pt-4 space-y-4">
+                            {field.visible && (
                               <div className="space-y-2">
-                                <Label>Shape</Label>
-                                <Select
-                                  value={imageSettings.shape}
-                                  onValueChange={(value: 'rounded' | 'square') => 
-                                    onImageSettingsChange({ shape: value })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="rounded">Rounded</SelectItem>
-                                    <SelectItem value="square">Square</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Label>Content</Label>
+                                <Input
+                                  value={data[field.type as keyof SignatureData] || ''}
+                                  onChange={onDataChange(field.type as keyof SignatureData)}
+                                  placeholder={`Enter ${fieldLabels[field.type].toLowerCase()}`}
+                                  className="flex-1"
+                                />
                               </div>
-
-                              {imageSettings.shape === 'rounded' && (
+                            )}
+                            
+                            <div className="space-y-2">
+                              <Label>Spacing After</Label>
+                              <Slider
+                                value={[field.spacing]}
+                                onValueChange={([value]) => handleSpacingChange(field.id, value)}
+                                min={0}
+                                max={48}
+                                step={4}
+                              />
+                            </div>
+                            
+                            {field.type === 'photo' && field.visible && (
+                              <div className="space-y-4">
                                 <div className="space-y-2">
                                   <Label>Border Radius</Label>
                                   <Slider
                                     value={[imageSettings.borderRadius]}
-                                    onValueChange={([value]) => 
-                                      onImageSettingsChange({ borderRadius: value })
-                                    }
+                                    onValueChange={([value]) => {
+                                      onImageSettingsChange({ borderRadius: value });
+                                    }}
                                     min={0}
-                                    max={24}
-                                    step={2}
-                                  />
-                                </div>
-                              )}
-
-                              <div className="space-y-2">
-                                <Label>Size Scale</Label>
-                                <div className="space-y-4">
-                                  <Slider
-                                    value={[imageSettings.scale * 100]}
-                                    onValueChange={([value]) => 
-                                      onImageSettingsChange({ scale: value / 100 })
-                                    }
-                                    min={50}
-                                    max={200}
-                                    step={10}
+                                    max={100}
+                                    step={4}
                                   />
                                   <div className="text-sm text-muted-foreground text-center">
-                                    {Math.round(imageSettings.scale * 100)}%
+                                    {imageSettings.borderRadius}px
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </Collapsible.Content>
-                    </Collapsible.Root>
-                  </div>
-                </SortableField>
-              ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+                            )}
+                          </div>
+                        </Collapsible.Content>
+                      </Collapsible.Root>
+                    </div>
+                  </SortableField>
+                ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 }

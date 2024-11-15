@@ -38,7 +38,7 @@ export function ColorCustomizer({ style, onChange }: ColorCustomizerProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Color Settings</CardTitle>
+            <div className="flex items-center gap-2 pb-2"><Palette className="h-4 w-4" /><CardTitle>Color Settings</CardTitle></div>
             <CardDescription>Choose colors for your signature text</CardDescription>
           </div>
           <TooltipProvider>
@@ -60,11 +60,11 @@ export function ColorCustomizer({ style, onChange }: ColorCustomizerProps) {
           </TooltipProvider>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="pt-6">
         <div className="space-y-4">
           <div>
             <Label className="flex items-center gap-2 mb-3">
-              <Palette className="h-4 w-4" />
+              
               Color Presets
             </Label>
             <div className="grid grid-cols-4 gap-2">
