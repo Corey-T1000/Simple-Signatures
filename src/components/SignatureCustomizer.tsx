@@ -65,7 +65,7 @@ export function SignatureCustomizer({
   const handleImageScaleChange = (value: string) => {
     onTemplateChange({ 
       ...template, 
-      imageScale: value,
+      imageScale: Number(value),
     });
   };
 
