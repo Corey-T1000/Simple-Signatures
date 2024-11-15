@@ -1,5 +1,5 @@
 import { SignatureTemplate } from '../types/signature';
-import { Slider } from './ui/Slider';
+import { Slider } from './ui/slider';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { CardHeader, CardTitle } from './ui/card';

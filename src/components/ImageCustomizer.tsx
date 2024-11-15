@@ -1,10 +1,9 @@
 import { ImageSettings } from '../types/signature';
-import { ColorPicker } from './ui/ColorPicker';
+import ColorPicker from './ui/ColorPicker';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
 import { Card, CardContent } from './ui/card';
-import { NumericSlider } from './ui/NumericSlider';
+import NumericSlider from './ui/NumericSlider';
 
 interface ImageCustomizerProps {
   settings: ImageSettings;
@@ -12,95 +11,73 @@ interface ImageCustomizerProps {
 }
 
 export function ImageCustomizer({ settings, onChange }: ImageCustomizerProps) {
-  const handleChange = (field: keyof ImageSettings) => (
-    value: number | string | boolean
-  ) => {
-    const newSettings = { ...settings, [field]: value };
-    
-    if (field === 'width' && settings.lockAspectRatio) {
-      const aspectRatio = settings.height / settings.width;
-      newSettings.height = (value as number) * aspectRatio;
-    }
-    
-    if (field === 'height' && settings.lockAspectRatio) {
-      const aspectRatio = settings.width / settings.height;
-      newSettings.width = (value as number) * aspectRatio;
-    }
-    
-    onChange(newSettings);
+  const handleChange = (key: keyof ImageSettings) => (value: any) => {
+    onChange({
+      ...settings,
+      [key]: value,
+    });
   };
 
   return (
     <Card>
-      <CardContent className="space-y-6 pt-6">
+      <CardContent className="space-y-4">
         <div className="space-y-4">
-          {settings.shape === 'rounded' && (
-            <NumericSlider
-              label="Corner Radius"
-              min={0}
-              max={50}
-              step={1}
-              value={settings.cornerRadius}
-              onChange={handleChange('cornerRadius')}
-            />
-          )}
-
-          {/* Shadow Controls */}
           <div className="flex items-center justify-between">
-            <Label>Shadow</Label>
+            <Label>Enable Shadow</Label>
             <Switch
               checked={settings.shadow}
-              onCheckedChange={(checked) => handleChange('shadow')(checked)}
+              onCheckedChange={handleChange('shadow')}
             />
           </div>
 
           {settings.shadow && (
             <>
-              <div className="space-y-2">
-                <Label>Shadow Color</Label>
-                <ColorPicker
-                  color={settings.shadowColor}
-                  onChange={(color) => handleChange('shadowColor')(color)}
-                />
-              </div>
-
-              <NumericSlider
-                label="Shadow Opacity"
-                min={0}
-                max={100}
-                step={1}
-                value={settings.shadowOpacity * 100}
-                onChange={(value) => handleChange('shadowOpacity')(value / 100)}
+              <ColorPicker
+                value={settings.shadowColor}
+                onChange={handleChange('shadowColor')}
+                label="Shadow Color"
               />
-
               <NumericSlider
-                label="Shadow Blur"
+                value={settings.shadowOpacity}
+                onChange={handleChange('shadowOpacity')}
                 min={0}
-                max={50}
-                step={1}
+                max={1}
+                step={0.1}
+                label="Shadow Opacity"
+              />
+              <NumericSlider
                 value={settings.shadowBlur}
                 onChange={handleChange('shadowBlur')}
-              />
-
-              <NumericSlider
-                label="Shadow Offset X"
-                min={-50}
+                min={0}
                 max={50}
                 step={1}
+                label="Shadow Blur"
+              />
+              <NumericSlider
                 value={settings.shadowOffsetX}
                 onChange={handleChange('shadowOffsetX')}
-              />
-
-              <NumericSlider
-                label="Shadow Offset Y"
                 min={-50}
                 max={50}
                 step={1}
+                label="Shadow X Offset"
+              />
+              <NumericSlider
                 value={settings.shadowOffsetY}
                 onChange={handleChange('shadowOffsetY')}
+                min={-50}
+                max={50}
+                step={1}
+                label="Shadow Y Offset"
               />
             </>
           )}
+          <div className="space-y-2">
+            <ColorPicker
+              value={settings.backgroundColor}
+              onChange={handleChange('backgroundColor')}
+              label="Background Color"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

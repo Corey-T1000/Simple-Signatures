@@ -30,11 +30,12 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
   const generateHtml = () => {
     const isVertical = template.layout === 'vertical';
     const imageSize = 100 * template.imageScale;
+    const isRounded = template.imageStyle?.shape === 'rounded';
 
     let borderRadius = '8px';
     if (imageSettings?.shape === 'rounded') {
       borderRadius = `${imageSettings.cornerRadius}px`;
-    } else if (template.imageStyle === 'rounded') {
+    } else if (isRounded) {
       borderRadius = '50%';
     }
 

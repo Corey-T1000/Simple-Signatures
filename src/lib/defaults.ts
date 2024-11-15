@@ -18,39 +18,33 @@ export const defaultSignatureData: SignatureData = {
 };
 
 export const defaultStyle: SignatureStyle = {
-  fontFamily: 'Inter, Arial, -apple-system, BlinkMacSystemFont, system-ui, sans-serif',
   primaryColor: '#000000',
   secondaryColor: '#666666',
-  imageFit: 'cover',
+  fontFamily: "Arial, 'Helvetica Neue', Helvetica, sans-serif",
+  imageFit: 'cover'
 };
 
 export const defaultTemplate: SignatureTemplate = {
   name: 'Default',
   layout: 'horizontal',
-  imageStyle: 'rounded',
   contentStyle: 'compact',
-  titleLayout: 'stacked',
-  ctaLayout: 'stacked',
+  imageStyle: 'rounded',
   imageAlignment: 'start',
   imageScale: 1,
-  imageFit: 'cover',
-  imageSpacing: 16,
   padding: {
-    top: 16,
-    right: 16,
-    bottom: 16,
-    left: 16,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   fieldOrder: [
-    { type: 'photo', visible: true, enabled: true, id: 'photo' },
-    { type: 'fullName', visible: true, enabled: true, id: 'fullName' },
-    { type: 'jobTitle', visible: true, enabled: true, id: 'jobTitle' },
-    { type: 'company', visible: true, enabled: true, id: 'company' },
-    { type: 'email', visible: true, enabled: true, id: 'email' },
-    { type: 'phone', visible: true, enabled: true, id: 'phone' },
-    { type: 'website', visible: true, enabled: true, id: 'website' },
-    { type: 'cta', visible: true, enabled: true, id: 'cta' },
-    { type: 'additionalCta', visible: true, enabled: true, id: 'additionalCta' },
+    { type: 'photo', visible: true, enabled: true, id: 'photo', spacing: 12 },
+    { type: 'fullName', visible: true, enabled: true, id: 'fullName', spacing: 6 },
+    { type: 'jobTitle', visible: true, enabled: true, id: 'jobTitle', spacing: 6 },
+    { type: 'company', visible: true, enabled: true, id: 'company', spacing: 12 },
+    { type: 'email', visible: true, enabled: true, id: 'email', spacing: 3 },
+    { type: 'phone', visible: true, enabled: true, id: 'phone', spacing: 3 },
+    { type: 'website', visible: true, enabled: true, id: 'website', spacing: 3 },
   ],
 };
 

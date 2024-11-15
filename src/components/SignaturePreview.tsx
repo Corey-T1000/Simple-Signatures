@@ -164,10 +164,9 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
       boxShadow: getShadowStyle(),
     };
 
-    if (imageSettings?.shape === 'rounded') {
-      imageStyle.borderRadius = `${imageSettings.cornerRadius}px`;
-    } else if (template.imageStyle === 'rounded') {
-      imageStyle.borderRadius = '9999px';
+    const isRounded = template.imageStyle?.shape === 'rounded';
+    if (isRounded) {
+      imageStyle.borderRadius = `${imageSettings?.cornerRadius}px`;
     } else {
       imageStyle.borderRadius = '8px';
     }

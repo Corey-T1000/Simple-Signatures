@@ -1,17 +1,45 @@
-import { useCallback, useState } from 'react';
-import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings, SignatureFieldType } from '../types/signature';
+import { useState, useMemo, useCallback } from 'react';
+import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings, SignatureFieldType, Theme } from '../types/signature';
 import { Button } from './ui/button';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 
 interface SignatureCodeProps {
   template: SignatureTemplate;
   data: SignatureData;
   style: SignatureStyle;
   imageSettings: ImageSettings;
+  theme?: Theme;
 }
 
-export function SignatureCode({ template, data, style, imageSettings }: SignatureCodeProps) {
+export function SignatureCode({ template, data, style, imageSettings, theme = 'light' }: SignatureCodeProps) {
   const [copied, setCopied] = useState(false);
+
+  const colors = useMemo(() => {
+    // For dark theme, lighten user-selected colors
+    if (theme === 'dark') {
+      const lightenColor = (color: string, amount: number) => {
+        const hex = color.replace('#', '');
+        const r = Math.min(255, parseInt(hex.slice(0, 2), 16) + amount);
+        const g = Math.min(255, parseInt(hex.slice(2, 4), 16) + amount);
+        const b = Math.min(255, parseInt(hex.slice(4, 6), 16) + amount);
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+      };
+
+      return {
+        primary: lightenColor(style.primaryColor, 100),
+        secondary: lightenColor(style.secondaryColor, 80),
+        text: '#D1D5DB'
+      };
+    }
+
+    // For light theme, use user-selected colors directly
+    return {
+      primary: style.primaryColor,
+      secondary: style.secondaryColor,
+      text: '#666666'
+    };
+  }, [theme, style.primaryColor, style.secondaryColor]);
 
   const isFieldVisible = useCallback((fieldType: string) => {
     const field = template.fieldOrder.find(f => f.type === fieldType);
@@ -28,6 +56,9 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
   const renderField = useCallback((fieldType: SignatureFieldType) => {
     if (!isFieldVisible(fieldType)) return '';
 
+    const field = template.fieldOrder.find(f => f.type === fieldType);
+    const spacing = field?.spacing ?? 0;
+
     switch (fieldType) {
       case 'fullName':
         return `
@@ -35,8 +66,8 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
             <td style="
               font-size: 20px;
               font-weight: bold;
-              color: ${style.primaryColor};
-              padding-bottom: 6px;
+              color: ${colors.primary};
+              padding-bottom: ${spacing}px;
               letter-spacing: -0.02em;
             ">
               ${data.fullName}
@@ -46,7 +77,7 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
       case 'jobTitle':
         return data.jobTitle ? `
           <tr>
-            <td style="padding-bottom: 6px; color: #666666;">
+            <td style="padding-bottom: ${spacing}px; color: ${colors.text};">
               ${data.jobTitle}
             </td>
           </tr>
@@ -54,7 +85,7 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
       case 'company':
         return data.company ? `
           <tr>
-            <td style="font-weight: 600; padding-bottom: ${template.contentStyle === 'spacious' ? '20px' : '12px'};">
+            <td style="font-weight: 600; padding-bottom: ${spacing}px; color: ${colors.text};">
               ${data.company}
             </td>
           </tr>
@@ -62,9 +93,9 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
       case 'email':
         return data.email ? `
           <tr>
-            <td style="padding: 3px 0;">
+            <td style="padding-bottom: ${spacing}px;">
               <a href="mailto:${data.email}" style="
-                color: ${style.secondaryColor}; 
+                color: ${colors.secondary}; 
                 text-decoration: none;
               ">
                 ${data.email}
@@ -75,9 +106,9 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
       case 'phone':
         return data.phone ? `
           <tr>
-            <td style="padding: 3px 0;">
+            <td style="padding-bottom: ${spacing}px;">
               <a href="tel:${data.phone}" style="
-                color: ${style.secondaryColor}; 
+                color: ${colors.secondary}; 
                 text-decoration: none;
               ">
                 ${data.phone}
@@ -88,146 +119,215 @@ export function SignatureCode({ template, data, style, imageSettings }: Signatur
       case 'website':
         return data.website ? `
           <tr>
-            <td style="padding: 3px 0;">
+            <td style="padding-bottom: ${spacing}px;">
               <a href="${data.website}" style="
-                color: ${style.secondaryColor}; 
+                color: ${colors.secondary}; 
                 text-decoration: none;
               ">
-                ${data.website.replace(/^https?:\/\//, '')}
+                ${data.website}
               </a>
             </td>
           </tr>
         ` : '';
-      case 'cta':
-        return data.ctaText ? `
+      case 'address':
+        return data.address ? `
           <tr>
-            <td style="padding: 3px 0;">
-              <a href="${data.ctaLink}" style="
-                color: ${style.secondaryColor}; 
+            <td style="color: ${colors.text}; padding-bottom: ${spacing}px;">
+              ${data.address}
+            </td>
+          </tr>
+        ` : '';
+      case 'socialLinks':
+        return data.socialLinks ? `
+          <tr>
+            <td style="padding-bottom: ${spacing}px;">
+              <a href="${data.socialLinks}" style="
+                color: ${colors.secondary}; 
                 text-decoration: none;
-                transition: opacity 0.2s ease-in-out;
               ">
-                ${data.ctaText}
+                ${data.socialLinks}
               </a>
             </td>
           </tr>
         ` : '';
       case 'additionalCta':
-        return data.additionalCtaText ? `
+        if (!data.additionalCtaText || !data.additionalCtaLink) return '';
+        return `
           <tr>
-            <td style="padding: 3px 0;">
+            <td style="padding-bottom: ${spacing}px;">
               <a href="${data.additionalCtaLink}" style="
-                color: ${style.secondaryColor}; 
+                color: ${colors.secondary}; 
                 text-decoration: none;
-                transition: opacity 0.2s ease-in-out;
               ">
                 ${data.additionalCtaText}
               </a>
             </td>
           </tr>
-        ` : '';
+        `;
       default:
         return '';
     }
-  }, [data, style, template.contentStyle, isFieldVisible]);
+  }, [isFieldVisible, data, colors, template.fieldOrder]);
 
   const generateHtml = useCallback(() => {
     const isVertical = template.layout === 'vertical';
     const imageSize = Math.round(100 * template.imageScale);
+    const photoField = template.fieldOrder.find(f => f.type === 'photo');
+    const imageSpacing = photoField?.spacing ?? 0;
 
     const html = `
       <table cellpadding="0" cellspacing="0" border="0" style="
         font-family: ${style.fontFamily};
         font-size: 14px;
         line-height: 1.4;
-        color: #333333;
+        color: ${theme === 'dark' ? '#D1D5DB' : '#333333'};
       ">
-        <tr>
-          <td>
-            ${isVertical ? '<center>' : ''}
-            <table cellpadding="0" cellspacing="0" border="0" style="${
-              isVertical ? '' : 'display: inline-block; vertical-align: top;'
-            }">
-              <tr>
-                ${template.layout === 'horizontal' && isFieldVisible('photo') && data.photo ? `
-                  <td style="padding: 0 ${template.imageSpacing}px 0 0; vertical-align: top;">
-                    <img 
-                      src="${data.photo}" 
-                      alt="${data.fullName}"
-                      width="${imageSize}"
-                      height="${imageSize}"
-                      style="
-                        border-radius: ${template.imageStyle === 'rounded' ? '50%' : '0'};
-                        object-fit: ${style.imageFit};
-                        box-shadow: ${generateShadowStyle()};
-                      "
-                    />
-                  </td>
-                ` : ''}
-                <td style="vertical-align: top;">
-                  ${template.layout === 'vertical' && isFieldVisible('photo') && data.photo ? `
-                    <div style="text-align: center; padding-bottom: ${template.imageSpacing}px; width: 100%;">
-                      <img 
-                        src="${data.photo}" 
-                        alt="${data.fullName}"
+        ${isVertical ? `
+          <tr>
+            ${isFieldVisible('photo') && data.photo ? `
+              <td style="padding-bottom: ${imageSpacing}px;">
+                <img
+                  src="${data.photo}"
+                  alt="Profile"
+                  width="${imageSize}"
+                  height="${imageSize}"
+                  style="
+                    display: block;
+                    width: ${imageSize}px;
+                    height: ${imageSize}px;
+                    object-fit: cover;
+                    ${template.cornerRadius ? `border-radius: ${template.cornerRadius}%;` : ''}
+                    ${generateShadowStyle() ? `box-shadow: ${generateShadowStyle()};` : ''}
+                  "
+                />
+              </td>
+            ` : ''}
+          </tr>
+          <tr>
+            <td>
+              <table cellpadding="0" cellspacing="0" border="0">
+                ${template.fieldOrder
+                  .filter(field => field.type !== 'photo')
+                  .map(field => renderField(field.type))
+                  .join('')}
+              </table>
+            </td>
+          </tr>
+        ` : `
+          <tr>
+            <td style="vertical-align: top;">
+              ${isFieldVisible('photo') && data.photo ? `
+                <table cellpadding="0" cellspacing="0" border="0" style="float: left; margin-right: ${imageSpacing}px;">
+                  <tr>
+                    <td>
+                      <img
+                        src="${data.photo}"
+                        alt="Profile"
                         width="${imageSize}"
                         height="${imageSize}"
                         style="
-                          border-radius: ${template.imageStyle === 'rounded' ? '50%' : '0'};
-                          object-fit: ${style.imageFit};
-                          box-shadow: ${generateShadowStyle()};
+                          display: block;
+                          width: ${imageSize}px;
+                          height: ${imageSize}px;
+                          object-fit: cover;
+                          ${template.cornerRadius ? `border-radius: ${template.cornerRadius}%;` : ''}
+                          ${generateShadowStyle() ? `box-shadow: ${generateShadowStyle()};` : ''}
                         "
                       />
-                    </div>
-                  ` : ''}
-                  <table cellpadding="0" cellspacing="0" border="0" style="text-align: left;">
-                    ${template.fieldOrder
-                      .filter(field => field.type !== 'photo')
-                      .map(field => renderField(field.type))
-                      .join('')}
-                  </table>
-                </td>
-              </tr>
-            </table>
-            ${isVertical ? '</center>' : ''}
-          </td>
-        </tr>
+                    </td>
+                  </tr>
+                </table>
+              ` : ''}
+              <table cellpadding="0" cellspacing="0" border="0">
+                ${template.fieldOrder
+                  .filter(field => field.type !== 'photo')
+                  .map(field => renderField(field.type))
+                  .join('')}
+              </table>
+            </td>
+          </tr>
+        `}
       </table>
     `.trim();
 
     return html;
-  }, [template, data, style, imageSettings, generateShadowStyle, renderField, isFieldVisible]);
+  }, [template, data, style, imageSettings, generateShadowStyle, renderField, isFieldVisible, theme]);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(generateHtml());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const html = useMemo(() => generateHtml(), [template, data, style, imageSettings, generateShadowStyle, renderField, isFieldVisible, theme]);
+
+  const handleDownload = () => {
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'signature.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className="space-y-4">
-      <div
-        className="p-8 rounded-lg border bg-white dark:bg-black"
-        dangerouslySetInnerHTML={{ __html: generateHtml() }}
-      />
-      <div className="flex justify-end">
-        <Button
-          variant="outline"
-          className="w-[100px]"
-          onClick={handleCopy}
-        >
-          {copied ? (
-            <>
-              <Check className="mr-2 h-4 w-4" />
-              Copied
-            </>
-          ) : (
-            <>
-              <Copy className="mr-2 h-4 w-4" />
-              Copy
-            </>
-          )}
-        </Button>
+      <div className="relative">
+        <Card className="bg-background">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded border bg-card p-4">
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="relative">
+        <Card className="bg-background">
+          <CardHeader className="pb-3 border-b">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium">HTML Code</CardTitle>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleDownload}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    navigator.clipboard.writeText(html);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-[20rem] overflow-auto">
+              <pre className="p-4 rounded bg-muted">
+                <code className="text-sm text-foreground">{html}</code>
+              </pre>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

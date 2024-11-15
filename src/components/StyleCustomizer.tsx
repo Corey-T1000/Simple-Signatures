@@ -2,7 +2,7 @@ import { SignatureStyle } from '../types/signature';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { ColorPicker } from './ui/ColorPicker';
+import ColorPicker from './ui/ColorPicker';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { Switch } from './ui/switch';

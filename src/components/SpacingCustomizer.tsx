@@ -1,6 +1,6 @@
 import { SignatureTemplate } from '../types/signature';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { NumericSlider } from './ui/NumericSlider';
+import NumericSlider from './ui/NumericSlider';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';

@@ -10,26 +10,33 @@ interface ImageSettingsProps {
   onDataChange: (data: Partial<SignatureData>) => void;
 }
 
+interface ImageSettings {
+  width: number;
+  height: number;
+  rotation: number;
+  zoom: number;
+  objectFit: string;
+  backgroundColor: string;
+  backgroundOpacity: number;
+  backgroundBlur: number;
+  lockAspectRatio: boolean;
+}
+
 export function ImageSettings({ style, onStyleChange, data, onDataChange }: ImageSettingsProps) {
   const [imageUrl, setImageUrl] = useState('');
 
-  const handleImageSettingsChange = (settings: {
-    width?: number;
-    height?: number;
-    rotation?: number;
-    zoom?: number;
-    objectFit?: 'contain' | 'cover' | 'fill';
-  }) => {
+  const handleImageSettingsChange = (updates: Partial<ImageSettings>) => {
     onStyleChange({
-      imageWidth: settings.width ?? style.imageWidth,
-      imageHeight: settings.height ?? style.imageHeight,
-      imageRotation: settings.rotation ?? style.imageRotation,
-      imageZoom: settings.zoom ?? style.imageZoom,
-      imageFit: settings.objectFit ?? style.imageFit,
+      ...style,
+      imageWidth: updates.width,
+      imageHeight: updates.height,
+      imageRotation: updates.rotation,
+      imageZoom: updates.zoom,
+      imageFit: updates.objectFit,
     });
   };
 
-  const imageSettings = {
+  const imageSettings: ImageSettings = {
     width: style.imageWidth,
     height: style.imageHeight,
     rotation: style.imageRotation,

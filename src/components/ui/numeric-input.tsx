@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from './input';
+import { cn } from '../../lib/utils';
 
 interface NumericInputProps {
   value: number;
@@ -8,6 +9,8 @@ interface NumericInputProps {
   max?: number;
   step?: number;
   unit?: string;
+  inputClassName?: string;
+  className?: string;
 }
 
 export function NumericInput({ 
@@ -16,7 +19,9 @@ export function NumericInput({
   min,
   max,
   step = 1,
-  unit = ''
+  unit = '',
+  inputClassName,
+  className
 }: NumericInputProps) {
   const [inputValue, setInputValue] = useState(String(value));
 
@@ -78,7 +83,7 @@ export function NumericInput({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={cn("flex items-center gap-2", className)}>
       <Input
         type="text"
         inputMode="decimal"
@@ -86,7 +91,7 @@ export function NumericInput({
         onChange={handleChange}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        className="w-20"
+        className={`rounded border ${inputClassName || ''}`}
       />
       {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
     </div>

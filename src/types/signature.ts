@@ -10,6 +10,8 @@ export interface SignatureData {
   ctaLink: string;
   additionalCtaText: string;
   additionalCtaLink: string;
+  address?: string;
+  socialLinks?: { platform: string; url: string }[];
 }
 
 export interface SignatureStyle {
@@ -17,27 +19,44 @@ export interface SignatureStyle {
   primaryColor: string;
   secondaryColor: string;
   imageFit: 'cover' | 'contain' | 'fill';
+  imageWidth?: number;
+  imageHeight?: number;
+  imageRotation?: number;
+  imageZoom?: number;
+  backgroundColor?: string;
+  backgroundOpacity?: number;
+  backgroundBlur?: number;
 }
 
-export type SignatureFieldType = 'photo' | 'fullName' | 'jobTitle' | 'company' | 'email' | 'phone' | 'website' | 'cta' | 'additionalCta';
+export type SignatureFieldType = 'photo' | 'fullName' | 'jobTitle' | 'company' | 'email' | 'phone' | 'website' | 'cta' | 'additionalCta' | 'address' | 'socialLinks';
 
-export interface SignatureFieldConfig {
+export interface SignatureField {
   type: SignatureFieldType;
   enabled: boolean;
   visible: boolean;
   required?: boolean;
   id: string;
+  spacing: number; // spacing in pixels after this element
 }
 
 export interface SignatureTemplate {
   name: string;
   layout: 'horizontal' | 'vertical';
-  imageStyle: 'rounded' | 'square';
   contentStyle: 'compact' | 'spacious';
   titleLayout: 'stacked' | 'inline';
   ctaLayout: 'stacked' | 'inline';
   imageAlignment: 'start' | 'center' | 'end';
   imageScale: number;
+  imageStyle?: {
+    width?: number;
+    height?: number;
+    rotation?: number;
+    zoom?: number;
+  };
+  imagePosition?: {
+    x: number;
+    y: number;
+  };
   imageFit: 'cover' | 'contain' | 'fill';
   imageSpacing: number;
   padding: {
@@ -46,7 +65,8 @@ export interface SignatureTemplate {
     bottom: number;
     left: number;
   };
-  fieldOrder: SignatureFieldConfig[];
+  cornerRadius: number;
+  fieldOrder: SignatureField[];
 }
 
 export interface ImageSettings {
