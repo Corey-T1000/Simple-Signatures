@@ -8,7 +8,7 @@ import { Label } from './components/ui/label';
 import { Input } from './components/ui/input';
 import { Switch } from './components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
-import { NumericInput } from './components/ui/numericInput';
+import { NumericInput } from './components/ui/numeric-input';
 import { SignatureData, SignatureStyle, SignatureTemplate, ImageSettings, Theme } from './types/signature';
 import { defaultSignatureData, defaultStyle, defaultTemplate, defaultImageSettings } from './lib/defaults';
 import { saveToStorage, getFromStorage } from './lib/storage';
