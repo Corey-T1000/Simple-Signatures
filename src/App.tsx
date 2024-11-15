@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { NumericInput } from './components/ui/numeric-input';
 import { SignatureData, SignatureStyle, SignatureTemplate, ImageSettings, Theme } from './types/signature';
 import { defaultSignatureData, defaultStyle, defaultTemplate, defaultImageSettings } from './lib/defaults';
-import { saveToStorage, getFromStorage } from './lib/storage';
+import { saveToStorage, getFromStorage, clearStorage } from './lib/storage';
 import { ImageIcon, Moon, Sun, RotateCcw, Code, Palette } from 'lucide-react';
 
 function App() {
@@ -71,9 +71,7 @@ function App() {
     setStyle(defaultStyle);
     setTemplate(defaultTemplate);
     setImageSettings(defaultImageSettings);
-    setTheme('light');
-    document.documentElement.classList.remove('dark');
-    localStorage.removeItem('signature-preferences');
+    clearStorage();
   };
 
   return (
