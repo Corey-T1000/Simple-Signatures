@@ -61,8 +61,8 @@ function App() {
     saveToStorage({ style: newStyle });
   };
 
-  const handleImageSettingsChange = (key: keyof ImageSettings, value: boolean | string) => {
-    const newImageSettings = { ...imageSettings, [key]: value };
+  const handleImageSettingsChange = (settings: Partial<ImageSettings>) => {
+    const newImageSettings = { ...imageSettings, ...settings };
     setImageSettings(newImageSettings);
     saveToStorage({ imageSettings: newImageSettings });
   };
@@ -85,205 +85,68 @@ function App() {
     saveToStorage({ data: newData });
   };
 
+  const handleStyleChange = (newStyle: SignatureStyle) => {
+    setStyle(newStyle);
+    saveToStorage({ style: newStyle });
+  };
+
+  console.log('App rendering with theme:', theme);
+
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
-      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center">
-          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-            <div className="flex items-center space-x-2">
-              <h1 className="text-lg font-bold">Simple Signatures</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleThemeToggle}
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? (
-                  <Moon className="h-4 w-4" />
-                ) : (
-                  <Sun className="h-4 w-4" />
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleReset}>
-                <RotateCcw className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Simple Signatures</h1>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              clearStorage();
+              setData(defaultSignatureData);
+              setStyle(defaultStyle);
+              setTemplate(defaultTemplate);
+              setImageSettings(defaultImageSettings);
+            }}
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          >
+            {theme === 'light' ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </div>
 
-      <div className="container mx-auto py-8">
-        <ResizablePanel
-          defaultWidth={600}
-          minWidth={400}
-          maxWidth={800}
-          leftPanel={
-            <div className="space-y-8 pr-4">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Eye className="h-5 w-5" />
-                  <h2 className="font-semibold text-lg">Preview</h2>
-                </div>
-                <SignatureCode
-                  data={data}
-                  style={style}
-                  template={template}
-                  imageSettings={imageSettings}
-                  theme={theme}
-                />
-              </div>
-            </div>
-          }
-          rightPanel={
-            <div className="flex-1 space-y-8">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Settings2 className="h-5 w-5" />
-                  <h2 className="font-semibold text-lg">Settings</h2>
-                </div>
-                <SignatureFieldManager
-                  template={template}
-                  data={data}
-                  onTemplateChange={handleTemplateChange}
-                  onDataChange={handleDataChange}
-                />
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="md:h-[calc(100vh-8rem)] md:sticky md:top-8">
+          <SignatureCode
+            template={template}
+            data={data}
+            style={style}
+            imageSettings={imageSettings}
+            theme={theme}
+          />
+        </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Palette className="h-5 w-5" />
-                  <h2 className="font-semibold text-lg">Style</h2>
-                </div>
-                <div className="space-y-6">
-                  <ColorCustomizer
-                    style={style}
-                    onStyleChange={setStyle}
-                  />
-
-                  <div className="space-y-2">
-                    <Label>Font Family</Label>
-                    <Select
-                      value={style.fontFamily}
-                      onValueChange={(fontFamily) => {
-                        const newStyle = { ...style, fontFamily };
-                        setStyle(newStyle);
-                        saveToStorage({ style: newStyle });
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {emailSafeFonts.map((font) => (
-                          <SelectItem 
-                            key={font.value} 
-                            value={font.value}
-                            style={{ fontFamily: font.value }}
-                          >
-                            {font.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <ImageIcon className="h-5 w-5" />
-                  <h2 className="font-semibold text-lg">Image Settings</h2>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Enable Image</Label>
-                    <Switch
-                      checked={imageSettings.enabled}
-                      onCheckedChange={(checked) => handleImageSettingsChange('enabled', checked)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {imageSettings.enabled && (
-                <>
-                  <div className="space-y-4">
-                    <h2 className="font-semibold text-lg">Image Style & Alignment</h2>
-                    <div className="space-y-2">
-                      <Label>Image Style</Label>
-                      <Select
-                        value={imageSettings.shape}
-                        onValueChange={(value) => setImageSettings({ ...imageSettings, shape: value as 'rounded' | 'square' })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="rounded">Rounded</SelectItem>
-                          <SelectItem value="square">Square</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image Alignment</Label>
-                      <Select
-                        value={template.imageAlignment}
-                        onValueChange={handleImageAlignmentChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="start">Start</SelectItem>
-                          <SelectItem value="center">Center</SelectItem>
-                          <SelectItem value="end">End</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h2 className="font-semibold text-lg">Image Fit & Scale</h2>
-                    <div className="space-y-2">
-                      <Label>Image Fit</Label>
-                      <Select
-                        value={style.imageFit}
-                        onValueChange={handleImageFitChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cover">Cover</SelectItem>
-                          <SelectItem value="contain">Contain</SelectItem>
-                          <SelectItem value="fill">Fill</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image Scale</Label>
-                      <NumericInput
-                        value={template.imageScale}
-                        onChange={(value) => {
-                          const newTemplate = { ...template, imageScale: value };
-                          setTemplate(newTemplate);
-                          saveToStorage({ template: newTemplate });
-                        }}
-                        min={0.1}
-                        max={2}
-                        step={0.1}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          }
-        />
+        <div className="space-y-8">
+          <SignatureFieldManager
+            template={template}
+            data={data}
+            style={style}
+            imageSettings={imageSettings}
+            onTemplateChange={handleTemplateChange}
+            onDataChange={handleDataChange}
+            onImageSettingsChange={handleImageSettingsChange}
+            onStyleChange={handleStyleChange}
+          />
+        </div>
       </div>
     </div>
   );

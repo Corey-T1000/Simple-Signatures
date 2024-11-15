@@ -148,32 +148,53 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
     setHasContrastWarning(!primaryMeetsContrast || !secondaryMeetsContrast);
   }, [colors.primary, colors.secondary, backgroundColor]);
 
-  const getImageStyle = (): CSSProperties => {
-    const imageStyle: CSSProperties = {
-      objectFit: imageSettings?.objectFit || template.imageFit,
-      maxWidth: '300px',
-      maxHeight: '300px',
-      boxShadow: getShadowStyle(),
+  const renderPhoto = () => {
+    if (!isFieldVisible('photo') || !data.photo) return null;
+
+    const containerStyle: CSSProperties = {
+      width: `${Math.round(100 * template.imageScale)}px`,
+      height: `${Math.round(100 * template.imageScale)}px`,
+      overflow: 'hidden',
+      borderRadius: `${imageSettings?.borderRadius || 0}px`,
+      display: 'inline-block'
     };
 
-    // Apply scale to width and height
-    const baseSize = 120;
-    const scale = imageSettings?.scale || 1.0;
-    imageStyle.width = `${Math.round(baseSize * scale)}px`;
-    imageStyle.height = `${Math.round(baseSize * scale)}px`;
+    const photoStyle: CSSProperties = {
+      display: 'block',
+      width: '100%',
+      height: '100%',
+      objectFit: imageSettings?.objectFit || 'cover',
+      transform: `scale(${imageSettings?.scale || 1})`,
+      maxWidth: 'none',
+      maxHeight: 'none'
+    };
 
-    // Apply border radius based on shape
-    imageStyle.borderRadius = imageSettings?.shape === 'rounded' 
-      ? `${imageSettings.borderRadius}px` 
-      : '8px';
-
-    // Apply border if specified
-    if (imageSettings?.border) {
-      const { width, color, style } = imageSettings.border;
-      imageStyle.border = `${width}px ${style} ${color}`;
+    if (imageSettings?.shadow) {
+      const { shadowColor, shadowOpacity, shadowBlur, shadowOffsetX, shadowOffsetY } = imageSettings;
+      const rgba = `rgba(${parseInt(shadowColor.slice(1, 3), 16)}, ${parseInt(shadowColor.slice(3, 5), 16)}, ${parseInt(shadowColor.slice(5, 7), 16)}, ${shadowOpacity})`;
+      containerStyle.boxShadow = `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${rgba}`;
     }
 
-    return imageStyle;
+    if (imageSettings?.border.width > 0) {
+      containerStyle.border = `${imageSettings.border.width}px ${imageSettings.border.style} ${imageSettings.border.color}`;
+    }
+
+    console.log('Preview container style:', containerStyle);
+    console.log('Preview photo style:', photoStyle);
+
+    return (
+      <div style={containerStyle}>
+        <img
+          src={data.photo}
+          alt="Profile"
+          style={photoStyle}
+        />
+      </div>
+    );
+  };
+
+  const isFieldVisible = (type: string) => {
+    return template.fieldOrder.find(field => field.type === type && field.visible);
   };
 
   const renderField = (type: string) => {
@@ -391,30 +412,22 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
                   }}>
                     <tbody>
                       <tr>
-                        {template.layout === 'horizontal' && template.fieldOrder.find(f => f.type === 'photo' && f.visible) && (
+                        {template.layout === 'horizontal' && isFieldVisible('photo') && (
                           <td style={{
                             padding: `0 ${template.imageSpacing}px 0 0`,
                             verticalAlign: 'top'
                           }}>
-                            <img
-                              src={data.photo}
-                              alt={data.fullName}
-                              style={getImageStyle()}
-                            />
+                            {renderPhoto()}
                           </td>
                         )}
                         <td style={{ verticalAlign: 'top' }}>
-                          {template.layout === 'vertical' && template.fieldOrder.find(f => f.type === 'photo' && f.visible) && (
+                          {template.layout === 'vertical' && isFieldVisible('photo') && (
                             <div style={{ 
                               textAlign: 'center',
                               paddingBottom: template.imageSpacing,
                               width: '100%'
                             }}>
-                              <img
-                                src={data.photo}
-                                alt={data.fullName}
-                                style={getImageStyle()}
-                              />
+                              {renderPhoto()}
                             </div>
                           )}
                           <table cellPadding="0" cellSpacing="0" border={0} style={{

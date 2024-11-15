@@ -12,13 +12,13 @@ export default defineConfig({
   },
   server: {
     port: 5177,
-    strictPort: true, // Fail if port is already in use
-    host: true, // Listen on all addresses
+    strictPort: false, // Allow fallback to another port if 5177 is in use
+    host: true,
     hmr: {
       overlay: true,
     },
     watch: {
       usePolling: true,
-    },
-  },
+    }
+  }
 })

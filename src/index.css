@@ -29,7 +29,7 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 224 71.4% 4.1%;
     --foreground: 210 40% 98%;
@@ -62,126 +62,33 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased min-h-screen;
+    @apply bg-background text-foreground;
   }
 }
 
-@layer utilities {
-  /* Enhanced animation utilities */
-  .animate-in {
-    animation: animate-in 0.2s ease-out;
-  }
-  
-  .slide-in-from-top {
-    animation: slide-in-from-top 0.2s ease-out;
-  }
-  
-  .slide-in-from-bottom {
-    animation: slide-in-from-bottom 0.2s ease-out;
-  }
-  
-  .slide-in-from-left {
-    animation: slide-in-from-left 0.2s ease-out;
-  }
-  
-  .slide-in-from-right {
-    animation: slide-in-from-right 0.2s ease-out;
-  }
-  
-  .fade-in {
-    animation: fade-in 0.2s ease-out;
-  }
-  
-  .zoom-in {
-    animation: zoom-in 0.2s ease-out;
-  }
-  
-  /* Transitions */
-  .transition-transform {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
-  
-  .transition-opacity {
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-  }
+.animate-in {
+  animation: animate-in 0.3s ease-in-out;
 }
 
-/* Animation Keyframes */
+.scale-in {
+  transform-origin: center;
+  animation: scale-in 0.15s ease-out;
+}
+
 @keyframes animate-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-from-top {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-from-bottom {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-from-left {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-from-right {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
   }
   to {
     opacity: 1;
   }
 }
 
-@keyframes zoom-in {
+@keyframes scale-in {
   from {
-    opacity: 0;
     transform: scale(0.95);
   }
   to {
-    opacity: 1;
     transform: scale(1);
   }
 }

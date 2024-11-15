@@ -84,7 +84,6 @@ export interface ImageSettings {
     color: string;
     style: 'solid' | 'dashed' | 'dotted';
   };
-  shape: 'rounded' | 'square';
   borderRadius: number;
 }
 

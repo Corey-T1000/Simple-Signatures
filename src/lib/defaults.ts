@@ -50,19 +50,18 @@ export const defaultTemplate: SignatureTemplate = {
 
 export const defaultImageSettings: ImageSettings = {
   enabled: true,
-  scale: 1.0,
+  scale: 1,
   objectFit: 'cover',
   shadow: false,
   shadowColor: '#000000',
   shadowOpacity: 0.2,
   shadowBlur: 10,
   shadowOffsetX: 0,
-  shadowOffsetY: 0,
+  shadowOffsetY: 4,
   border: {
     width: 0,
     color: '#000000',
     style: 'solid'
   },
-  shape: 'rounded',
   borderRadius: 8
 };

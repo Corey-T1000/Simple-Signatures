@@ -53,6 +53,34 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
     return `${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${rgba}`;
   }, [imageSettings]);
 
+  const generatePhotoStyle = useCallback(() => {
+    const styles = {
+      display: 'block',
+      width: `${Math.round(100 * template.imageScale)}px`,
+      height: `${Math.round(100 * template.imageScale)}px`,
+      objectFit: imageSettings.objectFit,
+      borderRadius: `${imageSettings.borderRadius}px !important`,
+      transform: `scale(${imageSettings.scale})`,
+      maxWidth: 'none',
+      maxHeight: 'none'
+    };
+
+    if (imageSettings.shadow) {
+      styles.boxShadow = generateShadowStyle();
+    }
+
+    if (imageSettings.border.width > 0) {
+      styles.border = `${imageSettings.border.width}px ${imageSettings.border.style} ${imageSettings.border.color}`;
+    }
+
+    const styleString = Object.entries(styles)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join('; ');
+
+    console.log('Generated photo style:', styleString, 'Border radius:', imageSettings.borderRadius);
+    return styleString;
+  }, [imageSettings, generateShadowStyle, template.imageScale]);
+
   const renderField = useCallback((fieldType: SignatureFieldType) => {
     if (!isFieldVisible(fieldType)) return '';
 
@@ -171,40 +199,44 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
 
   const generateHtml = useCallback(() => {
     const isVertical = template.layout === 'vertical';
-    const imageSize = Math.round(100 * template.imageScale);
     const photoField = template.fieldOrder.find(f => f.type === 'photo');
     const imageSpacing = photoField?.spacing ?? 0;
+
+    const photoStyle = generatePhotoStyle();
+    console.log('Photo field visible:', isFieldVisible('photo'));
+    console.log('Current image settings:', imageSettings);
 
     const html = `
       <table cellpadding="0" cellspacing="0" border="0" style="
         font-family: ${style.fontFamily};
         font-size: 14px;
         line-height: 1.4;
-        color: ${theme === 'dark' ? '#D1D5DB' : '#333333'};
+        ${template.padding ? `
+          padding-top: ${template.padding.top}px;
+          padding-right: ${template.padding.right}px;
+          padding-bottom: ${template.padding.bottom}px;
+          padding-left: ${template.padding.left}px;
+        ` : ''}
       ">
-        ${isVertical ? `
+        ${!isVertical ? `
           <tr>
-            ${isFieldVisible('photo') && data.photo ? `
-              <td style="padding-bottom: ${imageSpacing}px;">
-                <img
-                  src="${data.photo}"
-                  alt="Profile"
-                  width="${imageSize}"
-                  height="${imageSize}"
-                  style="
-                    display: block;
-                    width: ${imageSize}px;
-                    height: ${imageSize}px;
-                    object-fit: cover;
-                    ${template.cornerRadius ? `border-radius: ${template.cornerRadius}%;` : ''}
-                    ${generateShadowStyle() ? `box-shadow: ${generateShadowStyle()};` : ''}
-                  "
-                />
+            ${isFieldVisible('photo') ? `
+              <td style="vertical-align: top; padding-right: ${imageSpacing}px;">
+                <div style="
+                  width: ${Math.round(100 * template.imageScale)}px;
+                  height: ${Math.round(100 * template.imageScale)}px;
+                  overflow: hidden;
+                  border-radius: ${imageSettings.borderRadius}px;
+                ">
+                  <img
+                    src="${data.photo}"
+                    alt="Profile"
+                    style="${photoStyle}"
+                  />
+                </div>
               </td>
             ` : ''}
-          </tr>
-          <tr>
-            <td>
+            <td style="vertical-align: top;">
               <table cellpadding="0" cellspacing="0" border="0">
                 ${template.fieldOrder
                   .filter(field => field.type !== 'photo')
@@ -215,30 +247,26 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
           </tr>
         ` : `
           <tr>
-            <td style="vertical-align: top;">
-              ${isFieldVisible('photo') && data.photo ? `
-                <table cellpadding="0" cellspacing="0" border="0" style="float: left; margin-right: ${imageSpacing}px;">
+            <td>
+              <table cellpadding="0" cellspacing="0" border="0">
+                ${isFieldVisible('photo') ? `
                   <tr>
-                    <td>
-                      <img
-                        src="${data.photo}"
-                        alt="Profile"
-                        width="${imageSize}"
-                        height="${imageSize}"
-                        style="
-                          display: block;
-                          width: ${imageSize}px;
-                          height: ${imageSize}px;
-                          object-fit: cover;
-                          ${template.cornerRadius ? `border-radius: ${template.cornerRadius}%;` : ''}
-                          ${generateShadowStyle() ? `box-shadow: ${generateShadowStyle()};` : ''}
-                        "
-                      />
+                    <td style="padding-bottom: ${imageSpacing}px;">
+                      <div style="
+                        width: ${Math.round(100 * template.imageScale)}px;
+                        height: ${Math.round(100 * template.imageScale)}px;
+                        overflow: hidden;
+                        border-radius: ${imageSettings.borderRadius}px;
+                      ">
+                        <img
+                          src="${data.photo}"
+                          alt="Profile"
+                          style="${photoStyle}"
+                        />
+                      </div>
                     </td>
                   </tr>
-                </table>
-              ` : ''}
-              <table cellpadding="0" cellspacing="0" border="0">
+                ` : ''}
                 ${template.fieldOrder
                   .filter(field => field.type !== 'photo')
                   .map(field => renderField(field.type))
@@ -251,9 +279,9 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
     `.trim();
 
     return html;
-  }, [template, data, style, imageSettings, generateShadowStyle, renderField, isFieldVisible, theme]);
+  }, [template, data, style, imageSettings, generatePhotoStyle, renderField, isFieldVisible]);
 
-  const html = useMemo(() => generateHtml(), [template, data, style, imageSettings, generateShadowStyle, renderField, isFieldVisible, theme]);
+  const html = useMemo(() => generateHtml(), [template, data, style, imageSettings, generatePhotoStyle, renderField, isFieldVisible]);
 
   const handleDownload = () => {
     const blob = new Blob([html], { type: 'text/html' });
