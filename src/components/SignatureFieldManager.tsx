@@ -8,6 +8,7 @@ import {
   useSensors,
   DragEndEvent,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   arrayMove,
   SortableContext,
@@ -29,7 +30,6 @@ import {
   Image, 
   MousePointer,
   Link,
-  GripVertical
 } from 'lucide-react';
 
 interface SignatureFieldManagerProps {
@@ -84,7 +84,11 @@ export function SignatureFieldManager({
   onDataChange 
 }: SignatureFieldManagerProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -104,27 +108,31 @@ export function SignatureFieldManager({
       const oldIndex = items.indexOf(active.id as SignatureFieldType);
       const newIndex = items.indexOf(over.id as SignatureFieldType);
 
-      const newFieldOrder = arrayMove(
-        template.fieldOrder.filter(field => fieldLabels[field.type]), 
-        oldIndex, 
-        newIndex
-      );
+      // Get only the fields that are in the items array (visible fields)
+      const visibleFields = template.fieldOrder.filter(field => fieldLabels[field.type]);
+      const reorderedFields = arrayMove(visibleFields, oldIndex, newIndex);
+
+      // Preserve any fields that were filtered out
+      const hiddenFields = template.fieldOrder.filter(field => !fieldLabels[field.type]);
+      
       onTemplateChange({
         ...template,
-        fieldOrder: newFieldOrder,
+        fieldOrder: [...reorderedFields, ...hiddenFields],
       });
     }
   };
 
   const toggleFieldVisibility = (fieldType: string) => {
-    const newFieldOrder = template.fieldOrder
-      .filter(field => fieldLabels[field.type])
-      .map((field) =>
-        field.type === fieldType ? { ...field, visible: !field.visible } : field
-      );
+    const visibleFields = template.fieldOrder.filter(field => fieldLabels[field.type]);
+    const hiddenFields = template.fieldOrder.filter(field => !fieldLabels[field.type]);
+
+    const updatedVisibleFields = visibleFields.map((field) =>
+      field.type === fieldType ? { ...field, visible: !field.visible } : field
+    );
+
     onTemplateChange({
       ...template,
-      fieldOrder: newFieldOrder,
+      fieldOrder: [...updatedVisibleFields, ...hiddenFields],
     });
   };
 
@@ -205,52 +213,34 @@ export function SignatureFieldManager({
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
+          modifiers={[restrictToVerticalAxis]}
         >
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          <SortableContext  items={items} strategy={verticalListSortingStrategy}>
             {template.fieldOrder
               .filter(field => fieldLabels[field.type])
               .map((field) => (
-              <div
-                key={field.type}
-                className="flex flex-col py-2 px-4 bg-background hover:bg-accent rounded-lg border group"
-              >
-                {!field.visible ? (
-                  <div className="flex items-center justify-between">
-                    <SortableField id={field.type}>
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="flex items-center cursor-grab active:cursor-grabbing">
-                          <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
+                <SortableField key={field.type} id={field.type}>
+            
+                    <div className="space-y-2 h-8 w-full flex items-center justify-between">
+                      {!field.visible ? (
                         <div className="flex items-center gap-2">
                           {fieldIcons[field.type]}
                           <span className="font-medium">{fieldLabels[field.type]}</span>
-                          {field.required && (
-                            <span className="text-xs text-muted-foreground">(Required)</span>
-                          )}
                         </div>
-                      </div>
-                    </SortableField>
-                    <Switch
-                      checked={field.visible}
-                      onCheckedChange={() => toggleFieldVisibility(field.type)}
-                      disabled={field.required}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center cursor-grab active:cursor-grabbing">
-                      <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      ) : (
+                        <div className="flex flex-auto items-center gap-2">
+                          {fieldIcons[field.type]}
+                          {renderFieldInput(field.type)}
+                        </div>
+                      )}
+                      <div className=""><Switch
+                        checked={field.visible}
+                        onCheckedChange={() => toggleFieldVisibility(field.type)}
+                      /></div>
                     </div>
-                    {renderFieldInput(field.type)}
-                    <Switch
-                      checked={field.visible}
-                      onCheckedChange={() => toggleFieldVisibility(field.type)}
-                      disabled={field.required}
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
+                  
+                </SortableField>
+              ))}
           </SortableContext>
         </DndContext>
       </div>

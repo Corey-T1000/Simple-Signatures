@@ -1,9 +1,8 @@
-import { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { SignatureCode } from './components/SignatureCode';
 import { ExportOptions } from './components/ExportOptions';
 import { SignatureFieldManager } from './components/SignatureFieldManager';
 import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
 import { Label } from './components/ui/label';
 import { Input } from './components/ui/input';
 import { Switch } from './components/ui/switch';
@@ -12,7 +11,7 @@ import { NumericInput } from './components/ui/numeric-input';
 import { SignatureData, SignatureStyle, SignatureTemplate, ImageSettings, Theme } from './types/signature';
 import { defaultSignatureData, defaultStyle, defaultTemplate, defaultImageSettings } from './lib/defaults';
 import { saveToStorage, getFromStorage } from './lib/storage';
-import { ImageIcon, Moon, Sun } from 'lucide-react';
+import { ImageIcon, Moon, Sun, RotateCcw, Code, Palette } from 'lucide-react';
 
 function App() {
   const [data, setData] = useState<SignatureData>(defaultSignatureData);
@@ -22,31 +21,17 @@ function App() {
   const [theme, setTheme] = useState<Theme>('light');
 
   useEffect(() => {
-    const saved = getFromStorage();
-    if (saved.data) setData(saved.data);
-    if (saved.style) setStyle(saved.style);
-    if (saved.template) setTemplate(saved.template);
-    if (saved.imageSettings) setImageSettings(saved.imageSettings);
-    if (saved.theme) setTheme(saved.theme);
-    if (saved.theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    const savedState = getFromStorage();
+    if (savedState) {
+      if (savedState.data) setData(savedState.data);
+      if (savedState.style) setStyle(savedState.style);
+      if (savedState.template) setTemplate(savedState.template);
+      if (savedState.imageSettings) setImageSettings(savedState.imageSettings);
+      if (savedState.theme) setTheme(savedState.theme);
     }
   }, []);
 
-  const handleDataChange = (field: keyof SignatureData) => (e: ChangeEvent<HTMLInputElement>) => {
-    const newData = { ...data, [field]: e.target.value };
-    setData(newData);
-    saveToStorage({ data: newData });
-  };
-
-  const handleLayoutChange = (value: 'horizontal' | 'vertical') => {
-    const newTemplate = { ...template, layout: value };
-    setTemplate(newTemplate);
-    saveToStorage({ template: newTemplate });
-  };
-
-  const handleContentStyleChange = (value: 'compact' | 'spacious') => {
-    const newTemplate = { ...template, contentStyle: value };
+  const handleTemplateChange = (newTemplate: SignatureTemplate) => {
     setTemplate(newTemplate);
     saveToStorage({ template: newTemplate });
   };
@@ -69,16 +54,15 @@ function App() {
     saveToStorage({ style: newStyle });
   };
 
-  const handleImageSettingsChange = (field: keyof ImageSettings, value: any) => {
-    const newSettings = { ...imageSettings, [field]: value };
-    setImageSettings(newSettings);
-    saveToStorage({ imageSettings: newSettings });
+  const handleImageSettingsChange = (key: keyof ImageSettings, value: boolean | string) => {
+    const newImageSettings = { ...imageSettings, [key]: value };
+    setImageSettings(newImageSettings);
+    saveToStorage({ imageSettings: newImageSettings });
   };
 
   const toggleTheme = () => {
-    const newTheme: Theme = theme === 'light' ? 'dark' : 'light';
+    const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    document.documentElement.classList.toggle('dark');
     saveToStorage({ theme: newTheme });
   };
 
@@ -93,79 +77,75 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold">Signature Customizer</h1>
-            <div className="flex items-center gap-2">
+    <div className="min-h-screen bg-background text-foreground antialiased">
+      <div className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 max-w-screen-2xl items-center">
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="flex items-center space-x-2">
+              <h1 className="text-lg font-bold">Simple Signatures</h1>
+            </div>
+            <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" onClick={toggleTheme}>
-                {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
-              <Button variant="ghost" onClick={handleReset}>Reset</Button>
+              <Button variant="ghost" size="icon" onClick={handleReset}>
+                <RotateCcw className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <main className="container py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <div className="space-y-8">
-            {/* Details Form */}
-            <SignatureFieldManager
-              data={data}
-              template={template}
-              onDataChange={handleDataChange}
-              onTemplateChange={(newTemplate) => {
-                setTemplate(newTemplate);
-                saveToStorage({ template: newTemplate });
-              }}
-            />
-
-            {/* Layout Options */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="font-semibold">Layout</h3>
+      <div className="container max-w-screen-2xl pb-8 pt-6">
+        <div className="flex flex-col gap-8 md:flex-row">
+          {/* Left Column - Fixed Preview */}
+          <div className="md:w-[400px] md:sticky md:top-[4.5rem] md:h-[calc(100vh-6rem)] border-r">
+            <div className="space-y-8 pr-6">
+              <div className="space-y-4">
+                <h2 className="font-semibold text-lg">Preview</h2>
+                <SignatureCode
+                  data={data}
+                  style={style}
+                  template={template}
+                  imageSettings={imageSettings}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Direction</Label>
-                  <Select
-                    value={template.layout}
-                    onValueChange={handleLayoutChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="horizontal">Horizontal</SelectItem>
-                      <SelectItem value="vertical">Vertical</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Content Style</Label>
-                  <Select
-                    value={template.contentStyle}
-                    onValueChange={handleContentStyleChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="compact">Compact</SelectItem>
-                      <SelectItem value="spacious">Spacious</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Code className="h-5 w-5" />
+                  <h2 className="font-semibold text-lg">Export Options</h2>
                 </div>
+                <ExportOptions
+                  data={data}
+                  style={style}
+                  template={template}
+                  imageSettings={imageSettings}
+                />
               </div>
-            </Card>
+            </div>
+          </div>
 
-            {/* Typography & Colors */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="font-semibold">Typography & Colors</h3>
+          {/* Right Column - Scrollable Settings */}
+          <div className="flex-1 space-y-8">
+            <div className="space-y-4">
+        
+              <SignatureFieldManager
+                template={template}
+                data={data}
+                onTemplateChange={handleTemplateChange}
+                onDataChange={(field) => (e) => {
+                  const newData = { ...data, [field]: e.target.value };
+                  setData(newData);
+                  saveToStorage({ data: newData });
+                }}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Palette className="h-5 w-5" />
+                <h2 className="font-semibold text-lg">Style Customizer</h2>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -220,125 +200,101 @@ function App() {
                   />
                 </div>
               </div>
-            </Card>
+            </div>
 
-            {/* Image Settings */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
                 <ImageIcon className="h-5 w-5" />
-                <h3 className="font-semibold">Image Settings</h3>
+                <h2 className="font-semibold text-lg">Image Settings</h2>
               </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Enable Image</Label>
-                    <Switch
-                      checked={imageSettings.enabled}
-                      onCheckedChange={(checked) => handleImageSettingsChange('enabled', checked)}
-                    />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>Enable Image</Label>
+                  <Switch
+                    checked={imageSettings.enabled}
+                    onCheckedChange={(checked) => handleImageSettingsChange('enabled', checked)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {imageSettings.enabled && (
+              <>
+                <div className="space-y-4">
+                  <h2 className="font-semibold text-lg">Image Style & Alignment</h2>
+                  <div className="space-y-2">
+                    <Label>Image Style</Label>
+                    <Select
+                      value={template.imageStyle}
+                      onValueChange={handleImageStyleChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="rounded">Rounded</SelectItem>
+                        <SelectItem value="square">Square</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Image Alignment</Label>
+                    <Select
+                      value={template.imageAlignment}
+                      onValueChange={handleImageAlignmentChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="start">Start</SelectItem>
+                        <SelectItem value="center">Center</SelectItem>
+                        <SelectItem value="end">End</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
-                {imageSettings.enabled && (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Image Style</Label>
-                      <Select
-                        value={template.imageStyle}
-                        onValueChange={handleImageStyleChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="rounded">Rounded</SelectItem>
-                          <SelectItem value="square">Square</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image Alignment</Label>
-                      <Select
-                        value={template.imageAlignment}
-                        onValueChange={handleImageAlignmentChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="start">Start</SelectItem>
-                          <SelectItem value="center">Center</SelectItem>
-                          <SelectItem value="end">End</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image Fit</Label>
-                      <Select
-                        value={style.imageFit}
-                        onValueChange={handleImageFitChange}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cover">Cover</SelectItem>
-                          <SelectItem value="contain">Contain</SelectItem>
-                          <SelectItem value="fill">Fill</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Image Scale</Label>
-                      <NumericInput
-                        value={template.imageScale}
-                        onChange={(value) => {
-                          const newTemplate = { ...template, imageScale: value };
-                          setTemplate(newTemplate);
-                          saveToStorage({ template: newTemplate });
-                        }}
-                        min={0.1}
-                        max={2}
-                        step={0.1}
-                      />
-                    </div>
+                <div className="space-y-4">
+                  <h2 className="font-semibold text-lg">Image Fit & Scale</h2>
+                  <div className="space-y-2">
+                    <Label>Image Fit</Label>
+                    <Select
+                      value={style.imageFit}
+                      onValueChange={handleImageFitChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="cover">Cover</SelectItem>
+                        <SelectItem value="contain">Contain</SelectItem>
+                        <SelectItem value="fill">Fill</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                )}
-              </div>
-            </Card>
-          </div>
 
-          <div className="space-y-8">
-            {/* Preview */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="font-semibold">Preview</h3>
-              </div>
-              <SignatureCode
-                data={data}
-                style={style}
-                template={template}
-                imageSettings={imageSettings}
-              />
-            </Card>
-
-            {/* Export Options */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="font-semibold">Export</h3>
-              </div>
-              <ExportOptions
-                data={data}
-                style={style}
-                template={template}
-              />
-            </Card>
+                  <div className="space-y-2">
+                    <Label>Image Scale</Label>
+                    <NumericInput
+                      value={template.imageScale}
+                      onChange={(value) => {
+                        const newTemplate = { ...template, imageScale: value };
+                        setTemplate(newTemplate);
+                        saveToStorage({ template: newTemplate });
+                      }}
+                      min={0.1}
+                      max={2}
+                      step={0.1}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

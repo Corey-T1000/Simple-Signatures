@@ -43,14 +43,14 @@ export const defaultTemplate: SignatureTemplate = {
   },
   fieldOrder: [
     { type: 'photo', visible: true, enabled: true, id: 'photo' },
-    { type: 'fullName', visible: true, enabled: true, required: true, id: 'fullName' },
+    { type: 'fullName', visible: true, enabled: true, id: 'fullName' },
     { type: 'jobTitle', visible: true, enabled: true, id: 'jobTitle' },
     { type: 'company', visible: true, enabled: true, id: 'company' },
-    { type: 'email', visible: true, enabled: true, required: true, id: 'email' },
+    { type: 'email', visible: true, enabled: true, id: 'email' },
     { type: 'phone', visible: true, enabled: true, id: 'phone' },
     { type: 'website', visible: true, enabled: true, id: 'website' },
-    { type: 'cta', visible: false, enabled: true, id: 'cta' },
-    { type: 'additionalCta', visible: false, enabled: true, id: 'additionalCta' }
+    { type: 'cta', visible: true, enabled: true, id: 'cta' },
+    { type: 'additionalCta', visible: true, enabled: true, id: 'additionalCta' },
   ],
 };
 

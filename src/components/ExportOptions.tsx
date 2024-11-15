@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { CardContent } from './ui/card';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Download, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -185,10 +185,7 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Export Signature</CardTitle>
-      </CardHeader>
+  
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
           <Select
@@ -226,6 +223,6 @@ export function ExportOptions({ template, data, style, imageSettings }: ExportOp
           </div>
         )}
       </CardContent>
-    </Card>
+    
   );
 }

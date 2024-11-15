@@ -20,23 +20,26 @@ export function SortableField({ id, children }: SortableFieldProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 w-full touch-none"
+      {...attributes}
+      className={`flex flex-col py-1 px-2 bg-background hover:bg-accent/50 rounded-lg group transition-colors duration-200 touch-none ${
+        isDragging ? 'opacity-50 bg-accent' : ''
+      }`}
     >
-      <button
-        className="p-2 hover:bg-accent rounded-md cursor-grab active:cursor-grabbing"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </button>
-      {children}
+      <div className="flex items-center gap-2">
+        <button
+          className="cursor-grab active:cursor-grabbing focus:outline-none"
+          {...listeners}
+        >
+          <GripVertical className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+        </button>
+        {children}
+      </div>
     </div>
   );
 }
