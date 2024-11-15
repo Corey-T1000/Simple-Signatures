@@ -299,9 +299,7 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
     <div className="space-y-4">
       <div className="relative">
         <Card className="bg-background">
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Preview</CardTitle>
-          </CardHeader>
+         
           <CardContent>
             <div className="rounded border bg-card p-4">
               <div dangerouslySetInnerHTML={{ __html: html }} />
@@ -314,7 +312,7 @@ export function SignatureCode({ template, data, style, imageSettings, theme = 'l
         <Card className="bg-background">
           <CardHeader className="pb-3 border-b">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium">HTML Code</CardTitle>
+              <CardTitle>HTML Code</CardTitle>
               <div className="flex items-center gap-2">
                 <Button
                   size="sm"

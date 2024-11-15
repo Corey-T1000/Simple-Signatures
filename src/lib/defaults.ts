@@ -30,7 +30,7 @@ export const defaultTemplate: SignatureTemplate = {
   contentStyle: 'compact',
   imageStyle: 'rounded',
   imageAlignment: 'start',
-  imageScale: 1,
+  imageScale: .7,
   padding: {
     top: 0,
     right: 0,
@@ -38,13 +38,13 @@ export const defaultTemplate: SignatureTemplate = {
     left: 0,
   },
   fieldOrder: [
-    { type: 'photo', visible: true, enabled: true, id: 'photo', spacing: 12 },
-    { type: 'fullName', visible: true, enabled: true, id: 'fullName', spacing: 6 },
-    { type: 'jobTitle', visible: true, enabled: true, id: 'jobTitle', spacing: 6 },
-    { type: 'company', visible: true, enabled: true, id: 'company', spacing: 12 },
-    { type: 'email', visible: true, enabled: true, id: 'email', spacing: 3 },
-    { type: 'phone', visible: true, enabled: true, id: 'phone', spacing: 3 },
-    { type: 'website', visible: true, enabled: true, id: 'website', spacing: 3 },
+    { type: 'photo', visible: true, enabled: true, id: 'photo', spacing: 24 },
+    { type: 'fullName', visible: true, enabled: true, id: 'fullName', spacing: 0 },
+    { type: 'jobTitle', visible: true, enabled: true, id: 'jobTitle', spacing: 0 },
+    { type: 'company', visible: true, enabled: true, id: 'company', spacing: 4 },
+    { type: 'email', visible: true, enabled: true, id: 'email', spacing: 0 },
+    { type: 'phone', visible: true, enabled: true, id: 'phone', spacing: 0 },
+    { type: 'website', visible: true, enabled: true, id: 'website', spacing: 0 },
   ],
 };
 

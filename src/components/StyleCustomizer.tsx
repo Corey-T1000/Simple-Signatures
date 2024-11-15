@@ -25,14 +25,14 @@ interface StyleCustomizerProps {
 const defaultStyle: SignatureStyle = {
   fontFamily: 'Inter, Arial,-apple-system, BlinkMacSystemFont, system-ui, sans-serif',
   primaryColor: '#0F172A',
-  secondaryColor: '#3B82F6',
+  secondaryColor: '#000000',
   imageFit: 'cover'
 };
 
 const colorPresets = {
   modern: {
     primary: '#0F172A',
-    secondary: '#3B82F6'
+    secondary: '#000000'
   },
   professional: {
     primary: '#1F2937',
