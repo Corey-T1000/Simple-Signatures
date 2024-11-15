@@ -18,7 +18,6 @@ import { SortableField } from './SortableField';
 import { SignatureTemplate, SignatureFieldType, SignatureData } from '../types/signature';
 import { Card } from './ui/card';
 import { Switch } from './ui/switch';
-import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { 
   User, 

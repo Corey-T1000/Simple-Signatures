@@ -1,4 +1,4 @@
-import React, { useState, useEffect, CSSProperties, Fragment } from 'react';
+import { useState, useEffect, CSSProperties, Fragment } from 'react';
 import { SignatureTemplate, SignatureData, SignatureStyle, ImageSettings } from '../types/signature';
 import { Card } from './ui/card';
 import { useTheme } from '../lib/use-theme';
@@ -439,7 +439,7 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
           </table>
         </div>
       </Card>
-      {hasContrastWarning && <ColorWarning />}
+      {hasContrastWarning && <ColorWarning show={hasContrastWarning} />}
     </div>
   );
 }

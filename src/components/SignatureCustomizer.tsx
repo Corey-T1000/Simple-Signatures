@@ -4,7 +4,7 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { NumericInput } from './ui/NumericInput';
+import { NumericInput } from './ui/numeric-input';
 import { Layout, ArrowRightLeft, ArrowUpDown, Grid, Table, Type, Image as ImageIcon, GripVertical } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { FieldOrderManager } from './FieldOrderManager';
@@ -50,18 +50,19 @@ export function SignatureCustomizer({
     onStyleChange({ ...style, fontFamily: value });
   };
 
-  const handleColorChange = (value: string, type: 'primary' | 'secondary') => {
-    onStyleChange({
-      ...style,
-      [type === 'primary' ? 'primaryColor' : 'secondaryColor']: value,
-    });
+  const handlePrimaryColorChange = (value: string) => {
+    onStyleChange({ ...style, primaryColor: value });
+  };
+
+  const handleSecondaryColorChange = (value: string) => {
+    onStyleChange({ ...style, secondaryColor: value });
   };
 
   const handleImageFitChange = (value: 'cover' | 'contain' | 'fill') => {
     onStyleChange({ ...style, imageFit: value });
   };
 
-  const handleImageScaleChange = (value: number) => {
+  const handleImageScaleChange = (value: string) => {
     onTemplateChange({ 
       ...template, 
       imageScale: value,
@@ -239,7 +240,7 @@ export function SignatureCustomizer({
                   <Input
                     type="color"
                     value={style.primaryColor}
-                    onChange={(e) => handleColorChange(e.target.value, 'primary')}
+                    onChange={(e) => handlePrimaryColorChange(e.target.value)}
                     className="h-10 px-2 py-1"
                   />
                 </div>
@@ -249,7 +250,7 @@ export function SignatureCustomizer({
                   <Input
                     type="color"
                     value={style.secondaryColor}
-                    onChange={(e) => handleColorChange(e.target.value, 'secondary')}
+                    onChange={(e) => handleSecondaryColorChange(e.target.value)}
                     className="h-10 px-2 py-1"
                   />
                 </div>
@@ -312,7 +313,7 @@ export function SignatureCustomizer({
                   <Label>Size</Label>
                   <NumericInput
                     value={template.imageScale}
-                    onChange={(value) => handleImageScaleChange(value)}
+                    onChange={(value) => handleImageScaleChange(value.toString())}
                     min={50}
                     max={200}
                     step={1}
