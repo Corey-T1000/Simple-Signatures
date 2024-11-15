@@ -11,7 +11,9 @@ export default defineConfig({
     },
   },
   server: {
-    // Ensure HMR websocket connection works
+    port: 5177,
+    strictPort: true, // Fail if port is already in use
+    host: true, // Listen on all addresses
     hmr: {
       overlay: true,
     },

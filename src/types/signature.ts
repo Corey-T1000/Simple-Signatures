@@ -71,10 +71,8 @@ export interface SignatureTemplate {
 
 export interface ImageSettings {
   enabled: boolean;
-  width: number;
-  height: number;
+  scale: number;  // Scale factor (1 = 100%)
   objectFit: 'cover' | 'contain' | 'fill';
-  lockAspectRatio: boolean;
   shadow: boolean;
   shadowColor: string;
   shadowOpacity: number;
@@ -87,7 +85,7 @@ export interface ImageSettings {
     style: 'solid' | 'dashed' | 'dotted';
   };
   shape: 'rounded' | 'square';
-  cornerRadius: number;
+  borderRadius: number;
 }
 
 export type Theme = 'light' | 'dark';

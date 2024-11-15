@@ -10,25 +10,22 @@ import {
   Link,
   MapPin,
   Share,
+  ChevronDown,
 } from 'lucide-react';
 
 import { DndContext, DragEndEvent, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import * as Collapsible from '@radix-ui/react-collapsible';
 
 import { SortableField } from './SortableField';
-import { SignatureTemplate, SignatureFieldType, SignatureData, SignatureField } from '../types/signature';
-import { Card } from './ui/card';
-import { Switch } from './ui/switch';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-
-interface SignatureFieldManagerProps {
-  template: SignatureTemplate;
-  data: SignatureData;
-  onTemplateChange: (template: SignatureTemplate) => void;
-  onDataChange: (field: keyof SignatureData) => (value: string) => void;
-}
+import { SignatureTemplate, SignatureFieldType, SignatureData, ImageSettings } from '../types/signature';
+import { Switch } from '../components/ui/switch';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Slider } from '../components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Button } from '../components/ui/button';
 
 const fieldIcons: Record<SignatureFieldType, React.ReactNode> = {
   photo: <Image className="h-4 w-4" />,
@@ -58,18 +55,37 @@ const fieldLabels: Record<SignatureFieldType, string> = {
   socialLinks: 'Social Links',
 };
 
-export function SignatureFieldManager({ 
-  template, 
-  data, 
-  onTemplateChange, 
-  onDataChange 
+interface SignatureFieldManagerProps {
+  template: SignatureTemplate;
+  data: SignatureData;
+  imageSettings: ImageSettings;
+  onTemplateChange: (template: SignatureTemplate) => void;
+  onDataChange: (field: keyof SignatureData) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageSettingsChange: (settings: Partial<ImageSettings>) => void;
+}
+
+export function SignatureFieldManager({
+  template,
+  data,
+  imageSettings,
+  onTemplateChange,
+  onDataChange,
+  onImageSettingsChange
 }: SignatureFieldManagerProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const items = template.fieldOrder
+    .filter(field => fieldLabels[field.type])
+    .map(field => field.id);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -77,7 +93,7 @@ export function SignatureFieldManager({
     if (over && active.id !== over.id) {
       const oldIndex = template.fieldOrder.findIndex(field => field.id === active.id);
       const newIndex = template.fieldOrder.findIndex(field => field.id === over.id);
-
+      
       onTemplateChange({
         ...template,
         fieldOrder: arrayMove(template.fieldOrder, oldIndex, newIndex),
@@ -85,31 +101,14 @@ export function SignatureFieldManager({
     }
   };
 
-  const toggleField = (fieldType: SignatureFieldType) => {
-    const existingField = template.fieldOrder.find(field => field.type === fieldType);
-    let newFieldOrder: SignatureField[];
-
-    if (existingField) {
-      newFieldOrder = template.fieldOrder.filter(field => field.type !== fieldType);
-    } else {
-      const newField: SignatureField = {
-        type: fieldType,
-        enabled: true,
-        visible: true,
-        id: `${fieldType}-${Date.now()}`,
-        spacing: 16,
-      };
-      newFieldOrder = [...template.fieldOrder, newField];
-    }
-
+  const handleSpacingChange = (fieldId: string, value: number) => {
+    const newFieldOrder = template.fieldOrder.map(field =>
+      field.id === fieldId ? { ...field, spacing: value } : field
+    );
     onTemplateChange({
       ...template,
       fieldOrder: newFieldOrder,
     });
-  };
-
-  const handleFieldChange = (field: keyof SignatureData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    onDataChange(field)(e.target.value);
   };
 
   return (
@@ -120,48 +119,124 @@ export function SignatureFieldManager({
         onDragEnd={handleDragEnd}
         modifiers={[restrictToVerticalAxis]}
       >
-        <SortableContext
-          items={template.fieldOrder.map(field => field.id)}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={items} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
-            {template.fieldOrder.map((field) => (
-              <SortableField
-                key={field.id}
-                id={field.id}
-                icon={fieldIcons[field.type]}
-                label={fieldLabels[field.type]}
-                value={data[field.type] || ''}
-                onChange={handleFieldChange(field.type)}
-              />
-            ))}
+            {template.fieldOrder
+              .filter(field => fieldLabels[field.type])
+              .map((field) => (
+                <SortableField key={field.id} id={field.id}>
+                  <div className="flex-1">
+                    <Collapsible.Root>
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-2">
+                          {fieldIcons[field.type]}
+                          <span className="font-medium">{fieldLabels[field.type]}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {field.visible ? (
+                            <Input
+                              value={data[field.type as keyof SignatureData] || ''}
+                              onChange={onDataChange(field.type as keyof SignatureData)}
+                              placeholder={`Enter ${fieldLabels[field.type].toLowerCase()}`}
+                              className="flex-1 ml-4"
+                            />
+                          ) : (
+                            <Switch
+                              checked={field.visible}
+                              onCheckedChange={() => {
+                                const newFieldOrder = template.fieldOrder.map(f =>
+                                  f.id === field.id ? { ...f, visible: !f.visible } : f
+                                );
+                                onTemplateChange({
+                                  ...template,
+                                  fieldOrder: newFieldOrder,
+                                });
+                              }}
+                            />
+                          )}
+                          <Collapsible.Trigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </Collapsible.Trigger>
+                        </div>
+                      </div>
+                      <Collapsible.Content>
+                        <div className="pt-4 space-y-4">
+                          <div className="space-y-2">
+                            <Label>Spacing After</Label>
+                            <Slider
+                              value={[field.spacing]}
+                              onValueChange={([value]) => handleSpacingChange(field.id, value)}
+                              min={0}
+                              max={48}
+                              step={4}
+                            />
+                          </div>
+                          
+                          {field.type === 'photo' && (
+                            <div className="space-y-4">
+                              <div className="space-y-2">
+                                <Label>Shape</Label>
+                                <Select
+                                  value={imageSettings.shape}
+                                  onValueChange={(value: 'rounded' | 'square') => 
+                                    onImageSettingsChange({ shape: value })
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="rounded">Rounded</SelectItem>
+                                    <SelectItem value="square">Square</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {imageSettings.shape === 'rounded' && (
+                                <div className="space-y-2">
+                                  <Label>Border Radius</Label>
+                                  <Slider
+                                    value={[imageSettings.borderRadius]}
+                                    onValueChange={([value]) => 
+                                      onImageSettingsChange({ borderRadius: value })
+                                    }
+                                    min={0}
+                                    max={24}
+                                    step={2}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="space-y-2">
+                                <Label>Size Scale</Label>
+                                <div className="space-y-4">
+                                  <Slider
+                                    value={[imageSettings.scale * 100]}
+                                    onValueChange={([value]) => 
+                                      onImageSettingsChange({ scale: value / 100 })
+                                    }
+                                    min={50}
+                                    max={200}
+                                    step={10}
+                                  />
+                                  <div className="text-sm text-muted-foreground text-center">
+                                    {Math.round(imageSettings.scale * 100)}%
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </Collapsible.Content>
+                    </Collapsible.Root>
+                  </div>
+                </SortableField>
+              ))}
           </div>
         </SortableContext>
       </DndContext>
-
-      <Card className="p-4">
-        <h3 className="text-sm font-medium mb-2">Available Fields</h3>
-        <div className="space-y-2">
-          {Object.keys(fieldIcons).map((fieldType) => {
-            const isEnabled = template.fieldOrder.some(field => field.type === fieldType);
-            return (
-              <div
-                key={fieldType}
-                className="flex items-center justify-between py-1"
-              >
-                <div className="flex items-center gap-2">
-                  {fieldIcons[fieldType as SignatureFieldType]}
-                  <span className="text-sm">{fieldLabels[fieldType as SignatureFieldType]}</span>
-                </div>
-                <Switch
-                  checked={isEnabled}
-                  onCheckedChange={() => toggleField(fieldType as SignatureFieldType)}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </Card>
     </div>
   );
 }

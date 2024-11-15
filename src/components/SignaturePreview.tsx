@@ -148,27 +148,29 @@ export function SignaturePreview({ data, style, template, imageSettings }: Signa
     setHasContrastWarning(!primaryMeetsContrast || !secondaryMeetsContrast);
   }, [colors.primary, colors.secondary, backgroundColor]);
 
-  const getImageSize = () => {
-    const baseSize = 120;
-    const scale = template.imageScale / 100;
-    return Math.round(baseSize * scale);
-  };
-
   const getImageStyle = (): CSSProperties => {
     const imageStyle: CSSProperties = {
       objectFit: imageSettings?.objectFit || template.imageFit,
-      width: `${getImageSize()}px`,
-      height: `${getImageSize()}px`,
       maxWidth: '300px',
       maxHeight: '300px',
       boxShadow: getShadowStyle(),
     };
 
-    const isRounded = template.imageStyle?.shape === 'rounded';
-    if (isRounded) {
-      imageStyle.borderRadius = `${imageSettings?.cornerRadius}px`;
-    } else {
-      imageStyle.borderRadius = '8px';
+    // Apply scale to width and height
+    const baseSize = 120;
+    const scale = imageSettings?.scale || 1.0;
+    imageStyle.width = `${Math.round(baseSize * scale)}px`;
+    imageStyle.height = `${Math.round(baseSize * scale)}px`;
+
+    // Apply border radius based on shape
+    imageStyle.borderRadius = imageSettings?.shape === 'rounded' 
+      ? `${imageSettings.borderRadius}px` 
+      : '8px';
+
+    // Apply border if specified
+    if (imageSettings?.border) {
+      const { width, color, style } = imageSettings.border;
+      imageStyle.border = `${width}px ${style} ${color}`;
     }
 
     return imageStyle;
